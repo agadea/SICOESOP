@@ -1,4 +1,3 @@
-import { UserButton } from "@clerk/nextjs";
 import { CardSummary } from "./components/CardSummary/CardSummary";
 import { BookOpenCheck, List, UsersRound, Waypoints } from "lucide-react";
 import { LastCustomers } from "./components/LastCustomers";
