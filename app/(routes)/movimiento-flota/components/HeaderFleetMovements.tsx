@@ -10,10 +10,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { BulkUploadFleetMovements } from "./BulkUploadFleetMovements";
+import { FleetMovementForm } from "./FleetMovementForm";
 
-export function HeaderFleetMovements() {
+export function HeaderFleetMovements({
+  onCreated,
+}: {
+  onCreated?: () => void;
+}) {
   const [openModal, setOpenModal] = useState(false);
   const [openBulkDialog, setOpenBulkDialog] = useState(false);
+  const [openIndividual, setOpenIndividual] = useState(false);
 
   return (
     <div className="flex justify-between items-center mb-4">
@@ -37,7 +43,7 @@ export function HeaderFleetMovements() {
               variant="outline"
               onClick={() => {
                 setOpenModal(false);
-                // Aquí lógica para individual
+                setTimeout(() => setOpenIndividual(true), 200);
               }}
             >
               Movimiento individual
@@ -52,6 +58,20 @@ export function HeaderFleetMovements() {
               Carga masiva
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={openIndividual} onOpenChange={setOpenIndividual}>
+        <DialogContent className="sm:max-w-lg bg-white dark:bg-secondary">
+          <DialogHeader>
+            <DialogTitle>Movimiento individual</DialogTitle>
+            <DialogDescription />
+          </DialogHeader>
+          <FleetMovementForm
+            onSuccess={() => {
+              setOpenIndividual(false);
+              onCreated?.();
+            }}
+          />
         </DialogContent>
       </Dialog>
       <Dialog open={openBulkDialog} onOpenChange={setOpenBulkDialog}>

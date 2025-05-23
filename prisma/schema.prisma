@@ -10,6 +10,38 @@ datasource db {
   schemas  = ["genr", "oper", "rrhh", "tecn"]
 }
 
+model oper_mov_flota {
+  id            Int      @id @default(autoincrement())
+  created_at    DateTime @default(now()) @db.Timestamp(6)
+  day           Int
+  month         String   @db.VarChar(20)
+  year          Int
+  acft          String   @db.VarChar(20)
+  flight        String   @db.VarChar(20)
+  origin        String   @db.VarChar(10)
+  destination   String   @db.VarChar(10)
+  etd           String?  @db.VarChar(10)
+  cpta          String?  @db.VarChar(10)
+  atd           String?  @db.VarChar(10)
+  eta           String?  @db.VarChar(10)
+  ata           String?  @db.VarChar(10)
+  a_pta         String?  @db.VarChar(10)
+  pax           Int?
+  flight_time   String?  @db.VarChar(10)
+  block_time    String?  @db.VarChar(10)
+  fob           String?  @db.VarChar(20)
+  fod           String?  @db.VarChar(20)
+  fuel_consumed String?  @db.VarChar(20)
+  total_min_dly Int?
+  delay_code_1  String?  @db.VarChar(10)
+  delay_code_2  String?  @db.VarChar(10)
+  runway        String?  @db.VarChar(10)
+  ldw           Int?
+  tow           Int?
+
+  @@schema("oper")
+}
+
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model airports {
   code        String? @db.VarChar(50)
@@ -214,7 +246,6 @@ model genr_tabla_basica_det {
   @@schema("genr")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model oper_aviones {
   opav_id_avion             Int       @default(autoincrement())
   opav_opar_id_mod_aeronave Int
@@ -240,8 +271,8 @@ model oper_aviones {
   opav_fe_reg               DateTime? @db.Date
   opav_co_usuario           String?   @db.VarChar(10)
   opav_fe_modif             DateTime? @db.Date
+  opav_id                   Int       @id @default(autoincrement())
 
-  @@ignore
   @@schema("oper")
 }
 
