@@ -10,12 +10,9 @@ export async function GET() {
         opvu_fe_modif: true,
         oper_itinerarios: {
           select: {
-            // opit_id_itinerario: true,
-            // opit_nu_vuelo: true,
             opit_opru_id_ruta: true,
             oper_ruta: {
               select: {
-                // opru_id_ruta: true,
                 opru_gear_aerop_origen: true,
                 opru_gear_aerop_destino: true,
                 genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos: {

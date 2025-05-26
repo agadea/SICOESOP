@@ -151,7 +151,7 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
       setOrigen("");
       setDestino("");
     }
-  }, [vuelos, form]);
+  }, [vuelos, form.watch("flight")]);
 
   // Actualiza los valores de los campos origin y destination en el formulario cuando cambian
   useEffect(() => {
