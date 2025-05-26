@@ -33,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TimePickerField } from "./TimePickerField";
 
 // Esquema de validación con Zod (ajusta los campos requeridos según tu lógica)
 export const fleetMovementSchema = z.object({
@@ -150,7 +151,7 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
       setOrigen("");
       setDestino("");
     }
-  }, [vuelos, form.watch("flight")]);
+  }, [vuelos, form]);
 
   // Actualiza los valores de los campos origin y destination en el formulario cuando cambian
   useEffect(() => {
@@ -326,78 +327,72 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
             control={form.control}
             name="etd"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>ETD</FormLabel>
-                <FormControl>
-                  <Input placeholder="ETD" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+              <TimePickerField
+                label="ETD"
+                value={field.value || null}
+                onChange={field.onChange}
+                name="etd"
+              />
             )}
           />
           <FormField
             control={form.control}
             name="cpta"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>C/PTA</FormLabel>
-                <FormControl>
-                  <Input placeholder="C/PTA" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+              <TimePickerField
+                label="C/PTA"
+                value={field.value || null}
+                onChange={field.onChange}
+                name="cpta"
+              />
             )}
           />
           <FormField
             control={form.control}
             name="atd"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>ATD</FormLabel>
-                <FormControl>
-                  <Input placeholder="ATD" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+              <TimePickerField
+                label="ATD"
+                value={field.value || null}
+                onChange={field.onChange}
+                name="atd"
+              />
             )}
           />
           <FormField
             control={form.control}
             name="eta"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>ETA</FormLabel>
-                <FormControl>
-                  <Input placeholder="ETA" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+              <TimePickerField
+                label="ETA"
+                value={field.value || null}
+                onChange={field.onChange}
+                name="eta"
+              />
             )}
           />
           <FormField
             control={form.control}
             name="ata"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>ATA</FormLabel>
-                <FormControl>
-                  <Input placeholder="ATA" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+              <TimePickerField
+                label="ATA"
+                value={field.value || null}
+                onChange={field.onChange}
+                name="ata"
+              />
             )}
           />
           <FormField
             control={form.control}
             name="a_pta"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>A/PTA</FormLabel>
-                <FormControl>
-                  <Input placeholder="A/PTA" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+              <TimePickerField
+                label="A/PTA"
+                value={field.value || null}
+                onChange={field.onChange}
+                name="a_pta"
+              />
             )}
           />
           <FormField
