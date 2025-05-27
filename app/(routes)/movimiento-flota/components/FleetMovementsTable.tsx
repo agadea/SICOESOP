@@ -47,8 +47,46 @@ export function FleetMovementsTable() {
         if (!res.ok) throw new Error("Error al obtener movimientos");
         return res.json();
       })
-      .then((data) => {
-        setData(data);
+      .then((data: FleetMovement[]) => {
+        // Mapear los datos para agregar día, mes, año, matrícula y código de vuelo
+        const mapped = data.map((mov: FleetMovement) => {
+          const fecha = mov.opmf_date ? new Date(mov.opmf_date) : null;
+          const monthNames = [
+            "Enero",
+            "Febrero",
+            "Marzo",
+            "Abril",
+            "Mayo",
+            "Junio",
+            "Julio",
+            "Agosto",
+            "Septiembre",
+            "Octubre",
+            "Noviembre",
+            "Diciembre",
+          ];
+          // Extraer origen y destino desde oper_ruta del vuelo relacionado
+          const ruta = mov.oper_vuelos?.oper_ruta;
+          const origin =
+            ruta
+              ?.genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos
+              ?.gear_co_iata_aeropuerto || "";
+          const destination =
+            ruta
+              ?.genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos
+              ?.gear_co_iata_aeropuerto || "";
+          return {
+            ...mov,
+            day: fecha ? fecha.getDate().toString().padStart(2, "0") : "",
+            month: fecha ? monthNames[fecha.getMonth()] : "",
+            year: fecha ? fecha.getFullYear().toString() : "",
+            acft: mov.oper_aviones?.opav_matricula_avion || "",
+            flight: mov.oper_vuelos?.opvu_co_vuelo || "",
+            origin,
+            destination,
+          };
+        });
+        setData(mapped);
         setLoading(false);
       })
       .catch((err) => {
@@ -63,7 +101,7 @@ export function FleetMovementsTable() {
       method: "DELETE",
     });
     if (res.ok) {
-      setData((prev) => prev.filter((mov) => mov.id !== id));
+      setData((prev) => prev.filter((mov) => mov.opmf_id !== id));
     } else {
       alert("Error al eliminar el movimiento");
     }
@@ -100,7 +138,10 @@ export function FleetMovementsTable() {
         id: "actions",
         header: () => <div>Acciones</div>,
         cell: ({ row }) => (
-          <FleetMovementsActions id={row.original.id} onDelete={handleDelete} />
+          <FleetMovementsActions
+            id={row.original.opmf_id}
+            onDelete={handleDelete}
+          />
         ),
         enableHiding: false,
       },

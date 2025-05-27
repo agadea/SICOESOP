@@ -25,6 +25,20 @@ export type FleetMovement = {
   tow: number | null;
   opmf_date: string;
   // Relaciones opcionales si se usan en la UI
-  oper_aviones?: any;
-  oper_vuelos?: any;
+  oper_aviones?: {
+    opav_matricula_avion: string | null;
+  };
+  oper_vuelos?: {
+    opvu_co_vuelo: string | null;
+    oper_ruta?: {
+      genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos?: {
+        gear_co_iata_aeropuerto?: string | null;
+        gear_nm_aeropuerto?: string | null;
+      };
+      genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos?: {
+        gear_co_iata_aeropuerto?: string | null;
+        gear_nm_aeropuerto?: string | null;
+      };
+    };
+  };
 };

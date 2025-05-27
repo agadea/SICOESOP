@@ -7,8 +7,32 @@ export async function GET() {
     const movimientos = await prisma.oper_mov_flota.findMany({
       orderBy: { created_at: 'desc' },
       include: {
-        oper_aviones: true,
-        oper_vuelos: true,
+        oper_aviones: {
+          select: {
+            opav_matricula_avion: true,
+          },
+        },
+        oper_vuelos: {
+          select: {
+            opvu_co_vuelo: true,
+            oper_ruta: {
+              select: {
+                genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos: {
+                  select: {
+                    gear_co_iata_aeropuerto: true,
+                    gear_nm_aeropuerto: true,
+                  },
+                },
+                genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos: {
+                  select: {
+                    gear_co_iata_aeropuerto: true,
+                    gear_nm_aeropuerto: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
     return NextResponse.json(movimientos);
