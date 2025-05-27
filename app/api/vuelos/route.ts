@@ -8,31 +8,28 @@ export async function GET() {
         opvu_co_vuelo: true,
         opvu_id_vuelo: true,
         opvu_fe_modif: true,
-        oper_itinerarios: {
+        opvu_opru_id_ruta: true,
+        oper_ruta: {
           select: {
-            opit_opru_id_ruta: true,
-            oper_ruta: {
+            genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos: {
               select: {
-                opru_gear_aerop_origen: true,
-                opru_gear_aerop_destino: true,
-                genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos: {
-                  select: {
-                    gear_co_iata_aeropuerto: true,
-                  }
-                },
-                genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos: {
-                  select: {
-                    gear_co_iata_aeropuerto: true,
-                  }
-                }
+                gear_co_iata_aeropuerto: true,
+                gear_nm_aeropuerto: true,
+              }
+            },
+            genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos: {
+              select: {
+                gear_co_iata_aeropuerto: true,
+                gear_nm_aeropuerto: true,
               }
             }
-          },
-        },
+          }
+        }
       },
+
       where: {
         opvu_co_status: {
-          not: 0,
+          equals: 1,
         },
       },
       orderBy: { opvu_fe_modif: "asc" },

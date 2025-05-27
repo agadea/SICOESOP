@@ -128,9 +128,8 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
     const vueloSel = vuelos.find(
       (v) => String(v.opvu_id_vuelo) === String(selectedFlight)
     );
-    if (vueloSel && vueloSel.oper_itinerarios?.length > 0) {
-      const iti = vueloSel.oper_itinerarios[0];
-      const ruta = iti.oper_ruta;
+    if (vueloSel && vueloSel.oper_ruta) {
+      const ruta = vueloSel.oper_ruta;
       setOrigen(
         ruta
           ?.genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos
