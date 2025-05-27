@@ -118,8 +118,8 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
   });
 
   // Cuando cambia el vuelo seleccionado, actualiza origen y destino
+  const selectedFlight = form.watch("opmf_opvu_id_vuelo");
   useEffect(() => {
-    const selectedFlight = form.watch("opmf_opvu_id_vuelo");
     if (!selectedFlight || !Array.isArray(vuelos)) {
       setOrigen("");
       setDestino("");
@@ -144,7 +144,7 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
       setOrigen("");
       setDestino("");
     }
-  }, [vuelos, form.watch("opmf_opvu_id_vuelo"), form]);
+  }, [vuelos, selectedFlight, form]);
 
   const onSubmit = async (
     values: Omit<FleetMovementFormValues, "day" | "month" | "year">
@@ -397,7 +397,11 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
                     type="number"
                     placeholder="PAX"
                     {...field}
-                    value={field.value === undefined ? "" : field.value}
+                    value={
+                      field.value === undefined || field.value === null
+                        ? ""
+                        : field.value
+                    }
                     onChange={(e) =>
                       field.onChange(
                         e.target.value === ""
