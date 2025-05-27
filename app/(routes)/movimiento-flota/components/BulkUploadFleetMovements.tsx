@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import * as XLSX from "xlsx";
 
 export function BulkUploadFleetMovements() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -17,6 +18,23 @@ export function BulkUploadFleetMovements() {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
     }
+  };
+
+  // Nueva función para procesar el archivo Excel
+  const handleProcessFile = () => {
+    if (!selectedFile) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = new Uint8Array(e.target?.result as ArrayBuffer);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      // Mostrar los datos en consola
+      console.log("Datos del Excel:", json);
+      alert("Datos del Excel mostrados en consola");
+    };
+    reader.readAsArrayBuffer(selectedFile);
   };
 
   // Drag & drop handlers
@@ -90,7 +108,12 @@ export function BulkUploadFleetMovements() {
             </span>
           )}
         </div>
-        <Button type="button" className="w-full" disabled={!selectedFile}>
+        <Button
+          type="button"
+          className="w-full"
+          disabled={!selectedFile}
+          onClick={handleProcessFile}
+        >
           Cargar archivo
         </Button>
       </form>

@@ -76,6 +76,15 @@ export function HeaderFleetMovements({
       </Dialog>
       <Dialog open={openBulkDialog} onOpenChange={setOpenBulkDialog}>
         <DialogContent className="sm:max-w-lg bg-white dark:bg-secondary">
+          <DialogHeader>
+            <DialogTitle className="sr-only">
+              Carga masiva de movimientos de flota
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              Selecciona o arrastra un archivo Excel (.xlsx) con los movimientos
+              de flota a cargar. Solo se permite un archivo por vez.
+            </DialogDescription>
+          </DialogHeader>
           <BulkUploadFleetMovements />
         </DialogContent>
       </Dialog>
