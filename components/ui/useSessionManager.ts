@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
  */
 export function useSessionManager({
   warningMinutes = 1, // 1 minuto antes de expirar
-  sessionMinutes = 15, // 15 minutos de sesión
+  sessionMinutes = 5, // 5 minutos de sesión
   onLogout,
   onWarning,
 }: {
@@ -57,7 +57,9 @@ export function useSessionManager({
 
   useEffect(() => {
     // Escuchar eventos de actividad
-    const events = ["mousemove", "keydown", "mousedown", "touchstart"];
+    // const events = ["mousemove", "keydown", "mousedown", "touchstart"];
+    // Sí, estos eventos solo se detectan en el window de la app.
+    const events = ["keydown", "mousedown", "touchstart"];
     events.forEach((ev) => window.addEventListener(ev, handleActivity));
     handleActivity(); // Inicializa timers
     return () => {

@@ -35,33 +35,28 @@ import {
 } from "@/components/ui/select";
 import { TimePickerField } from "./TimePickerField";
 
-// Esquema de validación con Zod (ajusta los campos requeridos según tu lógica)
 export const fleetMovementSchema = z.object({
-  day: z.coerce.number().min(1).max(31),
-  month: z.string().min(1),
-  year: z.coerce.number().min(2020),
-  acft: z.string().min(1),
-  flight: z.string().min(1),
-  origin: z.string().min(1),
-  destination: z.string().min(1),
-  etd: z.string().optional(),
-  cpta: z.string().optional(),
-  atd: z.string().optional(),
-  eta: z.string().optional(),
-  ata: z.string().optional(),
-  a_pta: z.string().optional(),
-  pax: z.coerce.number().optional(),
-  flight_time: z.string().optional(),
-  block_time: z.string().optional(),
-  fob: z.string().optional(),
-  fod: z.string().optional(),
-  fuel_consumed: z.string().optional(),
-  total_min_dly: z.coerce.number().optional(),
-  delay_code_1: z.string().optional(),
-  delay_code_2: z.string().optional(),
-  runway: z.string().optional(),
-  ldw: z.coerce.number().optional(),
-  tow: z.coerce.number().optional(),
+  opmf_opav_id_avion: z.coerce.number(),
+  opmf_opvu_id_vuelo: z.coerce.number(),
+  etd: z.string().nullable().optional(),
+  cpta: z.string().nullable().optional(),
+  atd: z.string().nullable().optional(),
+  eta: z.string().nullable().optional(),
+  ata: z.string().nullable().optional(),
+  a_pta: z.string().nullable().optional(),
+  pax: z.coerce.number().nullable().optional(),
+  flight_time: z.string().nullable().optional(),
+  block_time: z.string().nullable().optional(),
+  fob: z.string().nullable().optional(),
+  fod: z.string().nullable().optional(),
+  fuel_consumed: z.string().nullable().optional(),
+  total_min_dly: z.coerce.number().nullable().optional(),
+  delay_code_1: z.string().nullable().optional(),
+  delay_code_2: z.string().nullable().optional(),
+  runway: z.string().nullable().optional(),
+  ldw: z.coerce.number().nullable().optional(),
+  tow: z.coerce.number().nullable().optional(),
+  opmf_date: z.string(), // ISO date string
 });
 
 export type FleetMovementFormValues = z.infer<typeof fleetMovementSchema>;
@@ -98,10 +93,8 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
     resolver: zodResolver(fleetMovementSchema),
     defaultValues: {
       // day, month, year se asignan en el submit
-      acft: "",
-      flight: "",
-      origin: origen,
-      destination: destino,
+      opmf_opav_id_avion: undefined,
+      opmf_opvu_id_vuelo: undefined,
       etd: "",
       cpta: "",
       atd: "",
@@ -120,12 +113,13 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
       runway: "",
       ldw: undefined,
       tow: undefined,
+      opmf_date: "",
     },
   });
 
   // Cuando cambia el vuelo seleccionado, actualiza origen y destino
   useEffect(() => {
-    const selectedFlight = form.watch("flight");
+    const selectedFlight = form.watch("opmf_opvu_id_vuelo");
     if (!selectedFlight || !Array.isArray(vuelos)) {
       setOrigen("");
       setDestino("");
@@ -151,13 +145,7 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
       setOrigen("");
       setDestino("");
     }
-  }, [vuelos, form.watch("flight")]);
-
-  // Actualiza los valores de los campos origin y destination en el formulario cuando cambian
-  useEffect(() => {
-    form.setValue("origin", origen);
-    form.setValue("destination", destino);
-  }, [origen, destino, form]);
+  }, [vuelos, form.watch("opmf_opvu_id_vuelo"), form]);
 
   const onSubmit = async (
     values: Omit<FleetMovementFormValues, "day" | "month" | "year">
@@ -169,9 +157,7 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
     setLoading(true);
     const payload = {
       ...values,
-      day: date.getDate(),
-      month: String(date.getMonth() + 1).padStart(2, "0"),
-      year: date.getFullYear(),
+      opmf_date: date.toISOString(),
     };
     const res = await fetch("/api/movimiento-flota", {
       method: "POST",
@@ -234,12 +220,15 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
           </div>
           <FormField
             control={form.control}
-            name="acft"
+            name="opmf_opav_id_avion"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>ACFT</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={(v) => field.onChange(Number(v))}
+                    value={String(field.value ?? "")}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona matrícula" />
                     </SelectTrigger>
@@ -261,12 +250,15 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
           />
           <FormField
             control={form.control}
-            name="flight"
+            name="opmf_opvu_id_vuelo"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Vuelo</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={(v) => field.onChange(Number(v))}
+                    value={String(field.value ?? "")}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona vuelo" />
                     </SelectTrigger>
@@ -329,7 +321,7 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
             render={({ field }) => (
               <TimePickerField
                 label="ETD"
-                value={field.value || null}
+                value={field.value ?? null}
                 onChange={field.onChange}
                 name="etd"
               />
@@ -341,7 +333,7 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
             render={({ field }) => (
               <TimePickerField
                 label="C/PTA"
-                value={field.value || null}
+                value={field.value ?? null}
                 onChange={field.onChange}
                 name="cpta"
               />
@@ -353,7 +345,7 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
             render={({ field }) => (
               <TimePickerField
                 label="ATD"
-                value={field.value || null}
+                value={field.value ?? null}
                 onChange={field.onChange}
                 name="atd"
               />
@@ -365,7 +357,7 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
             render={({ field }) => (
               <TimePickerField
                 label="ETA"
-                value={field.value || null}
+                value={field.value ?? null}
                 onChange={field.onChange}
                 name="eta"
               />
@@ -377,7 +369,7 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
             render={({ field }) => (
               <TimePickerField
                 label="ATA"
-                value={field.value || null}
+                value={field.value ?? null}
                 onChange={field.onChange}
                 name="ata"
               />
@@ -389,7 +381,7 @@ export function FleetMovementForm({ onSuccess }: { onSuccess?: () => void }) {
             render={({ field }) => (
               <TimePickerField
                 label="A/PTA"
-                value={field.value || null}
+                value={field.value ?? null}
                 onChange={field.onChange}
                 name="a_pta"
               />

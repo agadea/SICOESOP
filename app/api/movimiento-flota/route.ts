@@ -6,6 +6,10 @@ export async function GET() {
   try {
     const movimientos = await prisma.oper_mov_flota.findMany({
       orderBy: { created_at: 'desc' },
+      include: {
+        oper_aviones: true,
+        oper_vuelos: true,
+      },
     });
     return NextResponse.json(movimientos);
   } catch (error) {
@@ -17,7 +21,32 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
-    const movimiento = await prisma.oper_mov_flota.create({ data });
+    // Mapear los datos del frontend a los campos del modelo Prisma
+    const movimiento = await prisma.oper_mov_flota.create({
+      data: {
+        opmf_opav_id_avion: Number(data.opmf_opav_id_avion),
+        opmf_opvu_id_vuelo: Number(data.opmf_opvu_id_vuelo),
+        etd: data.etd ?? null,
+        cpta: data.cpta ?? null,
+        atd: data.atd ?? null,
+        eta: data.eta ?? null,
+        ata: data.ata ?? null,
+        a_pta: data.a_pta ?? null,
+        pax: data.pax ?? null,
+        flight_time: data.flight_time ?? null,
+        block_time: data.block_time ?? null,
+        fob: data.fob ?? null,
+        fod: data.fod ?? null,
+        fuel_consumed: data.fuel_consumed ?? null,
+        total_min_dly: data.total_min_dly ?? null,
+        delay_code_1: data.delay_code_1 ?? null,
+        delay_code_2: data.delay_code_2 ?? null,
+        runway: data.runway ?? null,
+        ldw: data.ldw ?? null,
+        tow: data.tow ?? null,
+        opmf_date: data.opmf_date ? new Date(data.opmf_date) : new Date(),
+      },
+    });
     return NextResponse.json(movimiento, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: 'Error al crear movimiento' }, { status: 500 });
