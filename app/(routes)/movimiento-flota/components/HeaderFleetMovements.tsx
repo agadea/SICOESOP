@@ -85,7 +85,12 @@ export function HeaderFleetMovements({
               de flota a cargar. Solo se permite un archivo por vez.
             </DialogDescription>
           </DialogHeader>
-          <BulkUploadFleetMovements />
+          <BulkUploadFleetMovements
+            onSuccess={() => {
+              setOpenBulkDialog(false);
+              onCreated?.();
+            }}
+          />
         </DialogContent>
       </Dialog>
     </div>

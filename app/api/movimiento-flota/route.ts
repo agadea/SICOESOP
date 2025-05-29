@@ -1,41 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET: Listar movimientos de flota
-export async function GET() {
+// GET: Listar movimientos de flota paginados
+export async function GET(req: NextRequest) {
   try {
-    const movimientos = await prisma.oper_mov_flota.findMany({
-      orderBy: { created_at: 'desc' },
-      include: {
-        oper_aviones: {
-          select: {
-            opav_matricula_avion: true,
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = parseInt(searchParams.get("pageSize") || "20", 10);
+    const skip = (page - 1) * pageSize;
+    const [movimientos, total] = await Promise.all([
+      prisma.oper_mov_flota.findMany({
+        orderBy: { created_at: "desc" },
+        skip,
+        take: pageSize,
+        include: {
+          oper_aviones: {
+            select: { opav_matricula_avion: true },
           },
-        },
-        oper_vuelos: {
-          select: {
-            opvu_co_vuelo: true,
-            oper_ruta: {
-              select: {
-                genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos: {
-                  select: {
-                    gear_co_iata_aeropuerto: true,
-                    gear_nm_aeropuerto: true,
+          oper_vuelos: {
+            select: {
+              opvu_co_vuelo: true,
+              oper_ruta: {
+                select: {
+                  genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos: {
+                    select: {
+                      gear_co_iata_aeropuerto: true,
+                      gear_nm_aeropuerto: true,
+                    },
                   },
-                },
-                genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos: {
-                  select: {
-                    gear_co_iata_aeropuerto: true,
-                    gear_nm_aeropuerto: true,
+                  genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos: {
+                    select: {
+                      gear_co_iata_aeropuerto: true,
+                      gear_nm_aeropuerto: true,
+                    },
                   },
                 },
               },
             },
           },
         },
-      },
-    });
-    return NextResponse.json(movimientos);
+      }),
+      prisma.oper_mov_flota.count(),
+    ]);
+    return NextResponse.json({ data: movimientos, total });
   } catch (error) {
     return NextResponse.json({ error: 'Error al obtener movimientos' }, { status: 500 });
   }

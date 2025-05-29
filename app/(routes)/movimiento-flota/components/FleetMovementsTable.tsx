@@ -39,15 +39,20 @@ export function FleetMovementsTable() {
   const [data, setData] = useState<FleetMovement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     setLoading(true);
-    fetch("/api/movimiento-flota")
+    fetch(`/api/movimiento-flota?page=${page}&pageSize=${pageSize}`)
       .then((res) => {
         if (!res.ok) throw new Error("Error al obtener movimientos");
         return res.json();
       })
-      .then((data: FleetMovement[]) => {
+      .then((result) => {
+        const data: FleetMovement[] = result.data;
+        setTotal(result.total || 0);
         // Mapear los datos para agregar día, mes, año, matrícula y código de vuelo
         const mapped = data.map((mov: FleetMovement) => {
           const fecha = mov.opmf_date ? new Date(mov.opmf_date) : null;
@@ -93,7 +98,7 @@ export function FleetMovementsTable() {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [page, pageSize]);
 
   const handleDelete = async (id: number) => {
     if (!confirm("¿Seguro que deseas eliminar este movimiento?")) return;
@@ -228,6 +233,9 @@ export function FleetMovementsTable() {
   if (loading) return <div>Cargando movimientos...</div>;
   if (error) return <div>Error al cargar movimientos: {error}</div>;
 
+  // Controles de paginación
+  const totalPages = Math.ceil(total / pageSize);
+
   return (
     <div className="w-full max-w-full overflow-x-auto">
       <div className="mb-4 shadow-sm bg-background rounded-lg p-4 w-full xl:w-full mx-auto hover:shadow-lg transition">
@@ -316,6 +324,47 @@ export function FleetMovementsTable() {
               )}
             </TableBody>
           </Table>
+        </div>
+        <div className="flex items-center justify-between py-2">
+          <div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              Anterior
+            </Button>
+            <span className="mx-2">
+              Página {page} de {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+            >
+              Siguiente
+            </Button>
+          </div>
+          <div>
+            <label className="mr-2">Filas por página:</label>
+            <select
+              title="Filas por página"
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setPage(1);
+              }}
+              className="border rounded px-2 py-1"
+            >
+              {[10, 20, 50, 100].map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
     </div>
