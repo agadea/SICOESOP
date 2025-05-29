@@ -8,31 +8,38 @@ import { ListIntegrations } from "./components/ListIntegrations";
 export const dataCardsSummary = [
   {
     icon: UsersRound,
-    total: "12.450",
-    average: 15,
-    title: "Companies created",
-    tooltipText: "See All of the companies created",
+    total: "32 vuelos",
+    average: 92,
+    title: "Vuelos realizados",
+    tooltipText: "Cantidad de vuelos en el periodo",
   },
   {
     icon: Waypoints,
-    total: "86.5%",
+    total: "12.500 kg",
     average: 80,
-    title: "Total Revenue",
-    tooltipText: "See all of the summary",
+    title: "Combustible consumido",
+    tooltipText: "Total de combustible consumido (kg)",
   },
   {
     icon: BookOpenCheck,
-    total: "363,95$",
-    average: 30,
-    title: "Bounce Rate",
-    tooltipText: "See all of the bounce rate",
+    total: "13.200 kg",
+    average: 85,
+    title: "Combustible cargado",
+    tooltipText: "Total de combustible cargado (kg)",
+  },
+  {
+    icon: List,
+    total: "5 demoras",
+    average: 16,
+    title: "Demoras registradas",
+    tooltipText: "Cantidad de vuelos con demoras",
   },
 ];
 export default function Home() {
   return (
     <div>
       <h2 className="text-2xl mb-4">Dashboard</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-x-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-x-20">
         {dataCardsSummary.map(
           ({ icon, total, average, title, tooltipText }) => (
             <CardSummary
@@ -54,6 +61,7 @@ export default function Home() {
         <TotalSuscribers />
         <ListIntegrations />
       </div>
+      {/* Se eliminó la tabla de movimientos de flota demo */}
     </div>
   );
 }
