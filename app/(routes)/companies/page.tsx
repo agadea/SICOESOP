@@ -5,7 +5,7 @@ export default function CompaniesPage() {
   return (
     <div>
       <HeaderCompanies />
-      <p>List Companies</p>
+      <p>List</p>
     </div>
   );
 }

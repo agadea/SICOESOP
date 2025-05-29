@@ -71,9 +71,13 @@ export function FormCreateCustomer(props: FormCreateCustomerProps) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Company name</FormLabel>
+                <FormLabel>Movement name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Company name..." type="text" {...field} />
+                  <Input
+                    placeholder="Movement name..."
+                    type="text"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -161,7 +165,7 @@ export function FormCreateCustomer(props: FormCreateCustomerProps) {
             name="profileImage"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Profile Image</FormLabel>
+                <FormLabel>Profile</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="https://www.someimage.com/image.png"

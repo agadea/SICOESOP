@@ -17,12 +17,12 @@ export const dataGeneralSidebar = [
   },
   {
     icon: Building2,
-    label: "Companies",
+    label: "Carga y Correo",
     href: "/companies"
   },
   {
     icon: Calendar,
-    label: "Calendar",
+    label: "Demoras",
     href: "/task"
   },
   {
