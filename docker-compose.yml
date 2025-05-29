@@ -13,7 +13,7 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./dump-intralaser-dev-202504280958-plain.sql:/docker-entrypoint-initdb.d/dump-intralaser-dev-202504280958-plain.sql
 
   pgadmin:
     image: dpage/pgadmin4
