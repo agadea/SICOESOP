@@ -35,8 +35,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// Reemplazo la tabla de pagos por una tabla demo de vuelos
-const flightData = [
+// Definir el tipo de los datos de vuelo
+interface FlightRow {
+  vuelo: string;
+  origen: string;
+  destino: string;
+  fecha: string;
+  pax: number;
+  combustibleConsumido: string;
+  combustibleCargado: string;
+  demoras: string;
+}
+
+const flightData: FlightRow[] = [
   {
     vuelo: "VY1234",
     origen: "CCS",
@@ -68,7 +79,7 @@ const flightData = [
     demoras: "5 min",
   },
 ];
-const flightColumns = [
+const flightColumns: { header: string; accessor: keyof FlightRow }[] = [
   { header: "Vuelo", accessor: "vuelo" },
   { header: "Origen", accessor: "origen" },
   { header: "Destino", accessor: "destino" },
@@ -111,10 +122,10 @@ export function CustomersTable() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Filtrar por vuelo..."
+          value={(table.getColumn("vuelo")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("vuelo")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

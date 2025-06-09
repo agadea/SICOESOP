@@ -37,6 +37,12 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json({ ok: true, count: result.count });
   } catch (error) {
-    return NextResponse.json({ error: 'Error en la carga masiva', detalles: error?.message }, { status: 500 });
+    let detalles = '';
+    if (error && typeof error === 'object' && 'message' in error) {
+      detalles = (error as any).message;
+    } else {
+      detalles = String(error);
+    }
+    return NextResponse.json({ error: 'Error en la carga masiva', detalles }, { status: 500 });
   }
 }

@@ -1,1 +1,1 @@
-import * from './CardSummary';
+export * from './CardSummary';

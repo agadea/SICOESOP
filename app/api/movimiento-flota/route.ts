@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// alternos
+
+
 // GET: Listar movimientos de flota paginados
 export async function GET(req: NextRequest) {
   try {

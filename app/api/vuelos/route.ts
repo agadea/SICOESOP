@@ -3,6 +3,10 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
+    //! Vuelos alternos: tomar el vuelo en el itinerario y el origen destino puede ser cambiado ? esto crearia una nueva ruta de categoria "Alterno" y se asignaria a la aeronave
+
+
+
     const vuelos = await prisma.oper_vuelos.findMany({
       select: {
         opvu_co_vuelo: true,
