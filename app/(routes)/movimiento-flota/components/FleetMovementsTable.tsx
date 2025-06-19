@@ -9,7 +9,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -181,17 +180,22 @@ export function FleetMovementsTable() {
   );
   const [rowSelection, setRowSelection] = React.useState({});
 
+  // Controles de paginación
+  const totalPages = Math.ceil(total / pageSize);
+
   const table = useReactTable({
     data: data ?? [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    // Eliminamos getPaginationRowModel para evitar paginación local
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    manualPagination: true, // Activar paginación manual
+    pageCount: totalPages, // Total de páginas según el backend
     state: {
       sorting,
       columnFilters,
@@ -232,9 +236,6 @@ export function FleetMovementsTable() {
 
   if (loading) return <div>Cargando movimientos...</div>;
   if (error) return <div>Error al cargar movimientos: {error}</div>;
-
-  // Controles de paginación
-  const totalPages = Math.ceil(total / pageSize);
 
   return (
     <div className="w-full max-w-full overflow-x-auto">

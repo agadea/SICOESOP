@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
     const pageSize = parseInt(searchParams.get("pageSize") || "20", 10);
+    console.log("[API movimiento-flota] pageSize recibido:", pageSize); // Log para depuración
     const skip = (page - 1) * pageSize;
     const [movimientos, total] = await Promise.all([
       prisma.oper_mov_flota.findMany({
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest) {
     ]);
     return NextResponse.json({ data: movimientos, total });
   } catch (error) {
-    return NextResponse.json({ error: 'Error al obtener movimientos' }, { status: 500 });
+    return NextResponse.json({ error: `Error al obtener movimientos, e: ${error}` }, { status: 500 });
   }
 }
 
@@ -83,6 +84,6 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json(movimiento, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: 'Error al crear movimiento' }, { status: 500 });
+    return NextResponse.json({ error: `Error al crear movimiento, e: ${error}` }, { status: 500 });
   }
 }

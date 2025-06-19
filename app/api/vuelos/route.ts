@@ -40,6 +40,6 @@ export async function GET() {
     });
     return NextResponse.json(vuelos);
   } catch (error) {
-    return NextResponse.json({ error: "Error al consultar vuelos" }, { status: 500 });
+    return NextResponse.json({ error: `Error al consultar vuelos, e: ${error}` }, { status: 500 });
   }
 }
