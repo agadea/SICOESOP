@@ -10,7 +10,6 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
     const pageSize = parseInt(searchParams.get("pageSize") || "20", 10);
-    console.log("[API movimiento-flota] pageSize recibido:", pageSize); // Log para depuración
     const skip = (page - 1) * pageSize;
     const [movimientos, total] = await Promise.all([
       prisma.oper_mov_flota.findMany({

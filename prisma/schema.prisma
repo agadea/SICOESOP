@@ -39,6 +39,7 @@ model oper_mov_flota {
   ldw                Int?
   tow                Int?
   opmf_date          DateTime     @db.Date
+  // relaciones
   oper_aviones       oper_aviones @relation(fields: [opmf_opav_id_avion], references: [opav_id_avion], onDelete: NoAction, onUpdate: NoAction, map: "oper_mov_flota_oper_aviones_fk")
   oper_vuelos        oper_vuelos  @relation(fields: [opmf_opvu_id_vuelo], references: [opvu_id_vuelo], onDelete: NoAction, onUpdate: NoAction, map: "oper_mov_flota_oper_vuelos_fk")
 
