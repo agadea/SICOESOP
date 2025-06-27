@@ -22,8 +22,8 @@ export function HeaderFleetMovements({
   const [openIndividual, setOpenIndividual] = useState(false);
 
   return (
-    <div className="flex justify-between items-center mb-4">
-      <h2 className="text-2xl">Movimiento de Flota</h2>
+    <div className="flex justify-between items-center">
+      <h2 className="text-2xl">Movimientos de Flota</h2>
       <Dialog open={openModal} onOpenChange={setOpenModal}>
         <DialogTrigger asChild>
           <Button>Agregar Movimiento</Button>

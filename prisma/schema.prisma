@@ -15,37 +15,23 @@ model oper_mov_flota {
   created_at         DateTime     @default(now()) @db.Timestamp(6)
   opmf_opav_id_avion Int
   opmf_opvu_id_vuelo Int
-  // tiempo
-  etd                String?      @db.VarChar(10)
-  cpta               String?      @db.VarChar(10)
-  atd                String?      @db.VarChar(10)
-  eta                String?      @db.VarChar(10)
-  ata                String?      @db.VarChar(10)
-  a_pta              String?      @db.VarChar(10)
-  flight_time        String?      @db.VarChar(10)
-  block_time         String?      @db.VarChar(10)
-  // pasajero -> capacidad max de ofertado por vuelo referencia a vuelos (pax, asientos_ofertados, limitacion_de asientos)
   pax                Int?
-  // refereces to oper_comb ? suministrado, consumido el tipo, combustible de salida y combustible de llegada ? el suministrado se carga aparte, tipo (kgs, lbs, lts)->vuelo has tipo_combustible_value (kgs, lbs, lts)
-  fob                String?      @db.VarChar(20)
-  fod                String?      @db.VarChar(20)
-  fuel_consumed      String?      @db.VarChar(20)
-  // demora
-  total_min_dly      Int?
-  delay_code_1       String?      @db.VarChar(10)
-  delay_code_2       String?      @db.VarChar(10)
-  //
   runway             String?      @db.VarChar(10)
-  ldw                Int?
-  tow                Int?
   opmf_date          DateTime     @db.Date
-  // relaciones
+  etd                DateTime?    @db.Timestamp(6)
+  atd                DateTime?    @db.Timestamp(6)
+  eta                DateTime?    @db.Timestamp(6)
+  ata                DateTime?    @db.Timestamp(6)
+  flight_time_min    Int?
+  block_time_min     Int?
+  fob                Decimal?     @db.Decimal(10, 2)
+  fod                Decimal?     @db.Decimal(10, 2)
+  fuel_consumed      Decimal?     @db.Decimal(10, 2)
+  fuel_supplied      Decimal?     @db.Decimal(10, 2)
+  ldw                Decimal?     @db.Decimal(10, 2)
+  tow                Decimal?     @db.Decimal(10, 2)
   oper_aviones       oper_aviones @relation(fields: [opmf_opav_id_avion], references: [opav_id_avion], onDelete: NoAction, onUpdate: NoAction, map: "oper_mov_flota_oper_aviones_fk")
   oper_vuelos        oper_vuelos  @relation(fields: [opmf_opvu_id_vuelo], references: [opvu_id_vuelo], onDelete: NoAction, onUpdate: NoAction, map: "oper_mov_flota_oper_vuelos_fk")
-
-  //ref errados -> tabla donde se almacena el movimiento de flota con problemas y al resolverse se cargan en el movimiento de flota correcto
-
-  //ref reportes (no mostrar filas que no tengan la carga y correo)
 
   @@schema("oper")
 }
@@ -634,8 +620,8 @@ model oper_ruta {
   opru_fe_mod                                                          DateTime?          @db.Date
   opru_getb_co_tabla                                                   Int?
   oper_itinerarios                                                     oper_itinerarios[]
-  genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos genr_aeropuertos?  @relation("oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos", fields: [opru_gear_aerop_destino], references: [gear_id_aeropuerto], onDelete: NoAction, onUpdate: NoAction)
-  genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos  genr_aeropuertos?  @relation("oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos", fields: [opru_gear_aerop_origen], references: [gear_id_aeropuerto], onDelete: NoAction, onUpdate: NoAction)
+  genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos genr_aeropuertos?  @relation("oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos", fields: [opru_gear_aerop_destino], references: [gear_id_aeropuerto], onDelete: NoAction, onUpdate: NoAction, map: "fk_opru_gear_aerop_destino")
+  genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos  genr_aeropuertos?  @relation("oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos", fields: [opru_gear_aerop_origen], references: [gear_id_aeropuerto], onDelete: NoAction, onUpdate: NoAction, map: "fk_opru_gear_aerop_origen")
   oper_vuelos                                                          oper_vuelos[]
 
   @@schema("oper")
