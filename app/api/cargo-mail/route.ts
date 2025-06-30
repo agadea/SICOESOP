@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { oper_pacc_estado_enum, oper_pacc_tipo_enum } from "../../../lib/generated/prisma";
+import { oper_pacc_estado_enum, oper_pacc_tipo_enum } from "@/lib/generated/prisma";
 
 // Archivo para la API cargo-mail
 
@@ -32,6 +32,18 @@ export async function POST(request: Request) {
     const bodyMapped = mapRequestBody(data);
 
     validateRequestBody(bodyMapped);
+
+    // Validar que el opmf_id no se esté repitiendo
+    const existingMovFlota = await prisma.oper_mov_flota.findUnique({
+      where: { opmf_id: bodyMapped.opmf_id },
+    });
+
+    if (existingMovFlota && existingMovFlota.opcc_id) {
+      return NextResponse.json({
+        error: "El movimiento de flota ya tiene una carga y correo asociados.",
+        code: "MOV_FLOTA_DUPLICADO"
+      }, { status: 400 });
+    }
 
     const newPaxCargaCorreo = await createPaxCargaCorreo(bodyMapped);
 
