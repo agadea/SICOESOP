@@ -10,6 +10,32 @@ datasource db {
   schemas  = ["genr", "oper", "rrhh", "tecn"]
 }
 
+model oper_mov_flota {
+  opmf_id            Int          @id @default(autoincrement())
+  created_at         DateTime     @default(now()) @db.Timestamp(6)
+  opmf_opav_id_avion Int
+  opmf_opvu_id_vuelo Int
+  pax                Int?
+  runway             String?      @db.VarChar(10)
+  opmf_date          DateTime     @db.Date
+  etd                DateTime?    @db.Timestamp(6)
+  atd                DateTime?    @db.Timestamp(6)
+  eta                DateTime?    @db.Timestamp(6)
+  ata                DateTime?    @db.Timestamp(6)
+  flight_time_min    Int?
+  block_time_min     Int?
+  fob                Decimal?     @db.Decimal(10, 2)
+  fod                Decimal?     @db.Decimal(10, 2)
+  fuel_consumed      Decimal?     @db.Decimal(10, 2)
+  fuel_supplied      Decimal?     @db.Decimal(10, 2)
+  ldw                Decimal?     @db.Decimal(10, 2)
+  tow                Decimal?     @db.Decimal(10, 2)
+  oper_aviones       oper_aviones @relation(fields: [opmf_opav_id_avion], references: [opav_id_avion], onDelete: NoAction, onUpdate: NoAction, map: "oper_mov_flota_oper_aviones_fk")
+  oper_vuelos        oper_vuelos  @relation(fields: [opmf_opvu_id_vuelo], references: [opvu_id_vuelo], onDelete: NoAction, onUpdate: NoAction, map: "oper_mov_flota_oper_vuelos_fk")
+
+  @@schema("oper")
+}
+
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model airports {
   code        String? @db.VarChar(50)
@@ -216,15 +242,15 @@ model genr_tabla_basica_det {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model oper_aviones {
-  opav_id_avion             Int       @default(autoincrement())
+  opav_id_avion             Int                   @id(map: "oper_aviones_pk") @default(autoincrement())
   opav_opar_id_mod_aeronave Int
-  opav_matricula_avion      String?   @db.VarChar(25)
-  opav_serial_avion         String?   @db.VarChar(25)
-  opav_motor_avion          String?   @db.VarChar(25)
-  opav_fuel_avion           String?   @db.VarChar(25)
+  opav_matricula_avion      String?               @db.VarChar(25)
+  opav_serial_avion         String?               @db.VarChar(25)
+  opav_motor_avion          String?               @db.VarChar(25)
+  opav_fuel_avion           String?               @db.VarChar(25)
   opav_ca_passenger         Int?
-  opav_rvsm                 String?   @db.VarChar(30)
-  opav_tcas                 String?   @db.VarChar(60)
+  opav_rvsm                 String?               @db.VarChar(30)
+  opav_tcas                 String?               @db.VarChar(60)
   opav_mzfw_peso_estruct    Int?
   opav_mrw_peso_estruct     Int?
   opav_mtgw_peso_estruct    Int?
@@ -236,12 +262,13 @@ model oper_aviones {
   opav_dow_ferry            Int?
   opav_doi_ferry            Float?
   opav_co_status            Int?
-  opav_fe_status            DateTime? @db.Date
-  opav_fe_reg               DateTime? @db.Date
-  opav_co_usuario           String?   @db.VarChar(10)
-  opav_fe_modif             DateTime? @db.Date
+  opav_fe_status            DateTime?             @db.Date
+  opav_fe_reg               DateTime?             @db.Date
+  opav_co_usuario           String?               @db.VarChar(10)
+  opav_fe_modif             DateTime?             @db.Date
+  oper_modelo_aeronaves     oper_modelo_aeronaves @relation(fields: [opav_opar_id_mod_aeronave], references: [opar_id_mod_aeronave], onDelete: Cascade, map: "oper_aviones_oper_modelo_aeronaves_fk")
+  oper_mov_flota            oper_mov_flota[]
 
-  @@ignore
   @@schema("oper")
 }
 
@@ -502,16 +529,16 @@ model oper_mant_vuelo_logbook {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model oper_modelo_aeronaves {
-  opar_id_mod_aeronave Int       @default(autoincrement())
-  opar_co_mod_aeronave String?   @db.VarChar(10)
-  opar_nm_mod_aeronave String?   @db.VarChar(100)
+  opar_id_mod_aeronave Int            @unique(map: "oper_modelo_aeronaves_unique") @default(autoincrement())
+  opar_co_mod_aeronave String?        @db.VarChar(10)
+  opar_nm_mod_aeronave String?        @db.VarChar(100)
   opar_co_status       Int?
-  opar_fe_status       DateTime? @db.Date
-  opar_fe_reg          DateTime? @db.Date
-  opar_co_usuario      String?   @db.VarChar(10)
-  opar_fe_modif        DateTime? @db.Date
+  opar_fe_status       DateTime?      @db.Date
+  opar_fe_reg          DateTime?      @db.Date
+  opar_co_usuario      String?        @db.VarChar(10)
+  opar_fe_modif        DateTime?      @db.Date
+  oper_aviones         oper_aviones[]
 
-  @@ignore
   @@schema("oper")
 }
 
@@ -593,8 +620,9 @@ model oper_ruta {
   opru_fe_mod                                                          DateTime?          @db.Date
   opru_getb_co_tabla                                                   Int?
   oper_itinerarios                                                     oper_itinerarios[]
-  genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos genr_aeropuertos?  @relation("oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos", fields: [opru_gear_aerop_destino], references: [gear_id_aeropuerto], onDelete: NoAction, onUpdate: NoAction)
-  genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos  genr_aeropuertos?  @relation("oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos", fields: [opru_gear_aerop_origen], references: [gear_id_aeropuerto], onDelete: NoAction, onUpdate: NoAction)
+  genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos genr_aeropuertos?  @relation("oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos", fields: [opru_gear_aerop_destino], references: [gear_id_aeropuerto], onDelete: NoAction, onUpdate: NoAction, map: "fk_opru_gear_aerop_destino")
+  genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos  genr_aeropuertos?  @relation("oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos", fields: [opru_gear_aerop_origen], references: [gear_id_aeropuerto], onDelete: NoAction, onUpdate: NoAction, map: "fk_opru_gear_aerop_origen")
+  oper_vuelos                                                          oper_vuelos[]
 
   @@schema("oper")
 }
@@ -690,6 +718,8 @@ model oper_vuelos {
   opvu_fe_modif     DateTime?          @db.Date
   opvu_co_usuario   String             @db.VarChar(10)
   oper_itinerarios  oper_itinerarios[]
+  oper_mov_flota    oper_mov_flota[]
+  oper_ruta         oper_ruta?         @relation(fields: [opvu_opru_id_ruta], references: [opru_id_ruta], onDelete: NoAction, onUpdate: NoAction, map: "oper_vuelos_oper_ruta_fk")
 
   @@schema("oper")
 }

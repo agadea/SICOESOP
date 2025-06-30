@@ -26,6 +26,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { FormCreateCustomerProps } from "./FormCreateCustomer.types";
 import { useState } from "react";
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string(),
@@ -71,9 +72,13 @@ export function FormCreateCustomer(props: FormCreateCustomerProps) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Company name</FormLabel>
+                <FormLabel>Movement name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Company name..." type="text" {...field} />
+                  <Input
+                    placeholder="Movement name..."
+                    type="text"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -163,11 +168,46 @@ export function FormCreateCustomer(props: FormCreateCustomerProps) {
               <FormItem>
                 <FormLabel>Profile Image</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="https://www.someimage.com/image.png"
-                    type="text"
-                    {...field}
-                  />
+                  {photoUploaded ? (
+                    <p className="text-sm">Image Uploaded</p>
+                  ) : (
+                    <div className="rounded-lg bg-slate-600/20 text-slate-800 outline-dotted outline-3">
+                      <Input
+                        type="file"
+                        accept="image/png, image/jpeg"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          if (
+                            !["image/png", "image/jpeg"].includes(file.type)
+                          ) {
+                            alert("Only PNG or JPG images are allowed.");
+                            e.target.value = "";
+                            return;
+                          }
+                          if (file.size > 5 * 1024 * 1024) {
+                            alert("Image must be less than 5MB.");
+                            e.target.value = "";
+                            return;
+                          }
+                          // Optionally, upload the image to a server or convert to base64
+                          // For now, just create a local URL and set as value
+                          const url = URL.createObjectURL(file);
+                          field.onChange(url);
+                          setPhotoUploaded(true);
+                        }}
+                      />
+                      {field.value && (
+                        <Image
+                          src={field.value}
+                          alt="Preview"
+                          width={96}
+                          height={96}
+                          className="h-24 w-24 object-cover rounded border"
+                        />
+                      )}
+                    </div>
+                  )}
                 </FormControl>
                 <FormMessage />
               </FormItem>

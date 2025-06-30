@@ -35,118 +35,59 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const data: Payment[] = [
+// Definir el tipo de los datos de vuelo
+interface FlightRow {
+  vuelo: string;
+  origen: string;
+  destino: string;
+  fecha: string;
+  pax: number;
+  combustibleConsumido: string;
+  combustibleCargado: string;
+  demoras: string;
+}
+
+const flightData: FlightRow[] = [
   {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
+    vuelo: "VY1234",
+    origen: "CCS",
+    destino: "MIA",
+    fecha: "2025-05-27",
+    pax: 120,
+    combustibleConsumido: "3.200 kg",
+    combustibleCargado: "3.500 kg",
+    demoras: "0 min",
   },
   {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
+    vuelo: "VY5678",
+    origen: "MIA",
+    destino: "CCS",
+    fecha: "2025-05-28",
+    pax: 110,
+    combustibleConsumido: "3.100 kg",
+    combustibleCargado: "3.400 kg",
+    demoras: "15 min",
   },
   {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
+    vuelo: "VY9101",
+    origen: "CCS",
+    destino: "BOG",
+    fecha: "2025-05-28",
+    pax: 98,
+    combustibleConsumido: "2.800 kg",
+    combustibleCargado: "3.000 kg",
+    demoras: "5 min",
   },
 ];
-
-export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
-export const columns: ColumnDef<Payment>[] = [
-  {
-    id: "select",
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
+const flightColumns: { header: string; accessor: keyof FlightRow }[] = [
+  { header: "Vuelo", accessor: "vuelo" },
+  { header: "Origen", accessor: "origen" },
+  { header: "Destino", accessor: "destino" },
+  { header: "Fecha", accessor: "fecha" },
+  { header: "PAX", accessor: "pax" },
+  { header: "Comb. Consumido", accessor: "combustibleConsumido" },
+  { header: "Comb. Cargado", accessor: "combustibleCargado" },
+  { header: "Demoras", accessor: "demoras" },
 ];
 
 export function CustomersTable() {
@@ -159,8 +100,8 @@ export function CustomersTable() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
-    columns,
+    data: flightData,
+    columns: flightColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -181,10 +122,10 @@ export function CustomersTable() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Filtrar por vuelo..."
+          value={(table.getColumn("vuelo")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("vuelo")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -215,53 +156,23 @@ export function CustomersTable() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
+      <div className="overflow-x-auto w-full">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
+            <TableRow>
+              {flightColumns.map((col) => (
+                <TableHead key={col.accessor}>{col.header}</TableHead>
+              ))}
+            </TableRow>
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
+            {flightData.map((row, idx) => (
+              <TableRow key={idx}>
+                {flightColumns.map((col) => (
+                  <TableCell key={col.accessor}>{row[col.accessor]}</TableCell>
+                ))}
               </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
       </div>

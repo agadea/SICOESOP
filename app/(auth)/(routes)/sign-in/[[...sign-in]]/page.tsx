@@ -52,7 +52,7 @@ export default function SignInPage() {
       await new Promise((resolve) => setTimeout(resolve, 300));
       router.push("/");
     } else {
-      let data = {};
+      let data: any = {};
       try {
         data = await res.json();
       } catch {

@@ -1,35 +1,40 @@
 export const dataGraphics = [
   {
     year: "2016",
-    newCustomers: 3120,
-    oldCustomers: 1987,
+    fuelConsumption: 12000, // litros
+    fuelLoad: 15000, // litros
   }, {
     year: "2017",
-    newCustomers: 4210,
-    oldCustomers: 2560,
+    fuelConsumption: 13500,
+    fuelLoad: 16000,
+  }, {
+    year: "2018",
+    fuelConsumption: 14200,
+    fuelLoad: 17000,
   }, {
     year: "2019",
-    newCustomers: 3890,
-    oldCustomers: 3105,
+    fuelConsumption: 15000,
+    fuelLoad: 17500,
   }, {
     year: "2020",
-    newCustomers: 4780,
-    oldCustomers: 2670,
+    fuelConsumption: 13000,
+    fuelLoad: 16000,
   }, {
     year: "2021",
-    newCustomers: 3650,
-    oldCustomers: 2890,
+    fuelConsumption: 15500,
+    fuelLoad: 18000,
   }, {
     year: "2022",
-    newCustomers: 4125,
-    oldCustomers: 3500,
+    fuelConsumption: 16200,
+    fuelLoad: 18500,
   }, {
     year: "2023",
-    newCustomers: 4490,
-    oldCustomers: 5300,
+    fuelConsumption: 17000,
+    fuelLoad: 19000,
   }, {
     year: "2024",
-    newCustomers: 4600,
-    oldCustomers: 6300,
+    fuelConsumption: 17500,
+    fuelLoad: 20000,
   },
 ]
+// Datos simulados de consumo y carga de combustible para aeronaves por año.

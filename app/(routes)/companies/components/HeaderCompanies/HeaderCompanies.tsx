@@ -20,20 +20,20 @@ export function HeaderCompanies() {
   const [openModalCreate, setOpenModalCreate] = useState(false);
   return (
     <div className="flex justify-between items-center">
-      <h2 className="text-2xl">List of companies</h2>
+      <h2 className="text-2xl">List of Carga y Correo</h2>
       <Dialog open={openModalCreate} onOpenChange={setOpenModalCreate}>
         <DialogTrigger asChild>
-          <Button>Create Company</Button>
+          <Button>Create Carga y Correo</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[625px]">
           <DialogHeader>
-            <DialogTitle>Create Customer</DialogTitle>
+            <DialogTitle>Create Carga y Correo</DialogTitle>
             <DialogDescription>
-              Create and configure your customer
+              Create and configure your Carga y Correo
             </DialogDescription>
           </DialogHeader>
 
-          <FormCreateCustomer />
+          <FormCreateCustomer setOpenModalCreate={setOpenModalCreate} />
         </DialogContent>
       </Dialog>
     </div>
