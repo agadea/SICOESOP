@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Display } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import "./globals.css";
@@ -18,19 +17,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={noto.className}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body className={noto.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }
+
+// Limpieza: elimina referencias a ClerkProvider, UserButton y SignIn/SignUp
+// Revisa los imports y el JSX para asegurar que no haya referencias a Clerk

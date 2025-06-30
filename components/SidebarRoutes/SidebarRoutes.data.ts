@@ -17,13 +17,13 @@ export const dataGeneralSidebar = [
   },
   {
     icon: Building2,
-    label: "Companies",
-    href: "/companies"
+    label: "Carga y Correo",
+    href: "/carga-correo"
   },
   {
     icon: Calendar,
-    label: "Calendar",
-    href: "/task"
+    label: "Demoras",
+    href: "/demora"
   },
   {
     icon: Truck,

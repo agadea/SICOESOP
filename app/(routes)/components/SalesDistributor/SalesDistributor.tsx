@@ -7,7 +7,7 @@ export function SalesDistributor() {
     <div className="shadow-sm bg-background rounded-lg p-5">
       <div className="flex gap-x-2 items-center">
         <CustomIcon icon={BarChart} />
-        <p className="text-lg">Sales Distributor </p>
+        <p className="text-lg">Grafica de Combustible</p>
       </div>
       <GraphicSuscribers />
     </div>

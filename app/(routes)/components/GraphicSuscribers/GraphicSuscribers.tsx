@@ -44,17 +44,17 @@ export function GraphicSuscribers() {
             <Tooltip />
             <Area
               type="monotone"
-              dataKey="newCustomers"
-              stroke="#887cfd"
-              fillOpacity={1}
-              fill="url(#colorUv)"
-            />
-            <Area
-              type="monotone"
-              dataKey="oldCustomers"
+              dataKey="fuelLoad"
               stroke="#82ca9d"
               fillOpacity={1}
               fill="url(#colorPv)"
+            />
+            <Area
+              type="monotone"
+              dataKey="fuelConsumption"
+              stroke="#887cfd"
+              fillOpacity={1}
+              fill="url(#colorUv)"
             />
           </AreaChart>
         </ResponsiveContainer>
