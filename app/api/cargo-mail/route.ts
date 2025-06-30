@@ -29,128 +29,23 @@ export async function POST(request: Request) {
   try {
     const data = await request.json();
 
-    // Mapear las propiedades del cuerpo del request al formato esperado
-    const bodyMapped = {
-      pax: {
-        estado: data.pax_estado,
-        tipo: data.pax_tipo,
-        valor: data.pax_cantidad,
-      },
-      carga: {
-        estado: data.carga_estado,
-        tipo: data.carga_tipo,
-        valor: data.carga_peso,
-      },
-      correo: {
-        estado: data.correo_estado,
-        tipo: data.correo_tipo,
-        valor: data.correo_peso,
-      },
-      opmf_id: data.opmf_id,
-    };
+    const bodyMapped = mapRequestBody(data);
 
-    // Transformar los valores del cuerpo del request para que coincidan con las claves esperadas
-    const transformEstado = (estado: string): string => {
-      const estadoTransformado: Record<string, string> = {
-        "Embarcada": "embarcada",
-        "Desembarcada": "desembarcada",
-        "En tránsito": "enTransito",
-      };
-      return estadoTransformado[estado] || estado;
-    };
+    validateRequestBody(bodyMapped);
 
-    const transformTipo = (tipo: string): string => {
-      const tipoTransformado: Record<string, string> = {
-        "Paga": "paga",
-        "Cortesía": "cortesia",
-      };
-      return tipoTransformado[tipo] || tipo;
-    };
+    const newPaxCargaCorreo = await createPaxCargaCorreo(bodyMapped);
 
-    // Aplicar transformación antes de la validación
-    bodyMapped.carga.estado = transformEstado(bodyMapped.carga.estado);
-    bodyMapped.carga.tipo = transformTipo(bodyMapped.carga.tipo);
-    bodyMapped.pax.estado = transformEstado(bodyMapped.pax.estado);
-    bodyMapped.pax.tipo = transformTipo(bodyMapped.pax.tipo);
-    bodyMapped.correo.estado = transformEstado(bodyMapped.correo.estado);
-    bodyMapped.correo.tipo = transformTipo(bodyMapped.correo.tipo);
+    const newPax = await createPax(bodyMapped, newPaxCargaCorreo.opcc_id);
+    const newCarga = await createCarga(bodyMapped, newPaxCargaCorreo.opcc_id);
+    const newCorreo = await createCorreo(bodyMapped, newPaxCargaCorreo.opcc_id);
 
-    // Validar que las propiedades mapeadas sean válidas
-    if (!bodyMapped.opmf_id || !bodyMapped.pax.estado || !bodyMapped.pax.tipo || !bodyMapped.pax.valor ||
-      !bodyMapped.carga.estado || !bodyMapped.carga.tipo || !bodyMapped.carga.valor ||
-      !bodyMapped.correo.estado || !bodyMapped.correo.tipo || !bodyMapped.correo.valor) {
-      throw new Error("El cuerpo del request está incompleto o tiene valores inválidos.");
-    }
-
-    // Validar los valores de los enums
-    if (!Object.keys(estadoEnum).includes(bodyMapped.carga.estado)) {
-      throw new Error(`Estado de carga inválido: ${bodyMapped.carga.estado}`);
-    }
-    if (!Object.keys(tipoEnum).includes(bodyMapped.carga.tipo)) {
-      throw new Error(`Tipo de carga inválido: ${bodyMapped.carga.tipo}`);
-    }
-
-    // Crear registros en oper_pax_carga_correo con referencias iniciales
-    const newPaxCargaCorreo = await prisma.oper_pax_carga_correo.create({
-      data: {
-        opmf_id: bodyMapped.opmf_id, // Referencia al movimiento de flota
-      },
-    });
-
-    // Crear registros en oper_pax con cantidad de pasajeros
-    const newPax = await prisma.oper_pax.create({
-      data: {
-        estado: "Embarcada", // Valor exacto del enum
-        tipo: "Paga", // Valor exacto del enum
-        valor: bodyMapped.pax.valor, // Representa la cantidad de pasajeros
-        opcc_id: newPaxCargaCorreo.opcc_id, // Referencia a la tabla central
-      },
-    });
-
-    // Crear registros en oper_carga
-    const newCarga = await prisma.oper_carga.create({
-      data: {
-        estado: estadoEnum[bodyMapped.carga.estado as keyof typeof estadoEnum],
-        tipo: tipoEnum[bodyMapped.carga.tipo as keyof typeof tipoEnum],
-        valor: bodyMapped.carga.valor, // Representa el peso de la carga
-        opcc_id: newPaxCargaCorreo.opcc_id, // Referencia a la tabla central
-      },
-    });
-
-    // Crear registros en oper_correo
-    const newCorreo = await prisma.oper_correo.create({
-      data: {
-        estado: "Desembarcada", // Valor exacto del enum
-        tipo: "Paga", // Valor exacto del enum
-        valor: bodyMapped.correo.valor, // Representa el peso del correo
-        opcc_id: newPaxCargaCorreo.opcc_id, // Referencia a la tabla central
-      },
-    });
-
-    // Actualizar la tabla oper_pax_carga_correo con las referencias completas
-    const updatedPaxCargaCorreo = await prisma.oper_pax_carga_correo.update({
-      where: { opcc_id: newPaxCargaCorreo.opcc_id },
-      data: {
-        oppa_id: newPax.opax_id,
-        opca_id: newCarga.ocarga_id,
-        opco_id: newCorreo.opcorreo_id,
-      },
-    });
+    const updatedPaxCargaCorreo = await updatePaxCargaCorreo(newPaxCargaCorreo.opcc_id, newPax.opax_id, newCarga.ocarga_id, newCorreo.opcorreo_id);
 
     if (!updatedPaxCargaCorreo) {
       throw new Error("No se pudo actualizar las referencias en oper_pax_carga_correo.");
     }
 
-    // Log para depuración
-    console.log("Registro actualizado en oper_pax_carga_correo:", updatedPaxCargaCorreo);
-
-    // Actualizar IDs para movimiento de flota y carga/correo
-    const updatedMovFlota = await prisma.oper_mov_flota.update({
-      where: { opmf_id: bodyMapped.opmf_id },
-      data: {
-        opcc_id: newPaxCargaCorreo.opcc_id,
-      },
-    });
+    const updatedMovFlota = await updateMovFlota(bodyMapped.opmf_id, newPaxCargaCorreo.opcc_id);
 
     return NextResponse.json({
       newPax,
@@ -162,4 +57,125 @@ export async function POST(request: Request) {
   } catch (error: any) {
     return NextResponse.json({ error: `Error al crear el cargo-mail: ${error.message}` }, { status: 500 });
   }
+}
+
+function mapRequestBody(data: any) {
+  return {
+    pax: {
+      estado: data.pax_estado,
+      tipo: data.pax_tipo,
+      valor: data.pax_cantidad,
+    },
+    carga: {
+      estado: data.carga_estado,
+      tipo: data.carga_tipo,
+      valor: data.carga_peso,
+    },
+    correo: {
+      estado: data.correo_estado,
+      tipo: data.correo_tipo,
+      valor: data.correo_peso,
+    },
+    opmf_id: data.opmf_id,
+  };
+}
+
+function validateRequestBody(bodyMapped: any) {
+  const transformEstado = (estado: string): string => {
+    const estadoTransformado: Record<string, string> = {
+      "Embarcada": "embarcada",
+      "Desembarcada": "desembarcada",
+      "En tránsito": "enTransito",
+    };
+    return estadoTransformado[estado] || estado;
+  };
+
+  const transformTipo = (tipo: string): string => {
+    const tipoTransformado: Record<string, string> = {
+      "Paga": "paga",
+      "Cortesía": "cortesia",
+    };
+    return tipoTransformado[tipo] || tipo;
+  };
+
+  bodyMapped.carga.estado = transformEstado(bodyMapped.carga.estado);
+  bodyMapped.carga.tipo = transformTipo(bodyMapped.carga.tipo);
+  bodyMapped.pax.estado = transformEstado(bodyMapped.pax.estado);
+  bodyMapped.pax.tipo = transformTipo(bodyMapped.pax.tipo);
+  bodyMapped.correo.estado = transformEstado(bodyMapped.correo.estado);
+  bodyMapped.correo.tipo = transformTipo(bodyMapped.correo.tipo);
+
+  if (!bodyMapped.opmf_id || !bodyMapped.pax.estado || !bodyMapped.pax.tipo || !bodyMapped.pax.valor ||
+    !bodyMapped.carga.estado || !bodyMapped.carga.tipo || !bodyMapped.carga.valor ||
+    !bodyMapped.correo.estado || !bodyMapped.correo.tipo || !bodyMapped.correo.valor) {
+    throw new Error("El cuerpo del request está incompleto o tiene valores inválidos.");
+  }
+
+  if (!Object.keys(estadoEnum).includes(bodyMapped.carga.estado)) {
+    throw new Error(`Estado de carga inválido: ${bodyMapped.carga.estado}`);
+  }
+  if (!Object.keys(tipoEnum).includes(bodyMapped.carga.tipo)) {
+    throw new Error(`Tipo de carga inválido: ${bodyMapped.carga.tipo}`);
+  }
+}
+
+async function createPaxCargaCorreo(bodyMapped: any) {
+  return await prisma.oper_pax_carga_correo.create({
+    data: {
+      opmf_id: bodyMapped.opmf_id,
+    },
+  });
+}
+
+async function createPax(bodyMapped: any, opcc_id: number) {
+  return await prisma.oper_pax.create({
+    data: {
+      estado: "Embarcada",
+      tipo: "Paga",
+      valor: bodyMapped.pax.valor,
+      opcc_id,
+    },
+  });
+}
+
+async function createCarga(bodyMapped: any, opcc_id: number) {
+  return await prisma.oper_carga.create({
+    data: {
+      estado: estadoEnum[bodyMapped.carga.estado as keyof typeof estadoEnum],
+      tipo: tipoEnum[bodyMapped.carga.tipo as keyof typeof tipoEnum],
+      valor: bodyMapped.carga.valor,
+      opcc_id,
+    },
+  });
+}
+
+async function createCorreo(bodyMapped: any, opcc_id: number) {
+  return await prisma.oper_correo.create({
+    data: {
+      estado: "Desembarcada",
+      tipo: "Paga",
+      valor: bodyMapped.correo.valor,
+      opcc_id,
+    },
+  });
+}
+
+async function updatePaxCargaCorreo(opcc_id: number, oppa_id: number, opca_id: number, opco_id: number) {
+  return await prisma.oper_pax_carga_correo.update({
+    where: { opcc_id },
+    data: {
+      oppa_id,
+      opca_id,
+      opco_id,
+    },
+  });
+}
+
+async function updateMovFlota(opmf_id: number, opcc_id: number) {
+  return await prisma.oper_mov_flota.update({
+    where: { opmf_id },
+    data: {
+      opcc_id,
+    },
+  });
 }
