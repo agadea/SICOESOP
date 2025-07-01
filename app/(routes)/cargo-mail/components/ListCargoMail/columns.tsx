@@ -55,63 +55,59 @@ export const columns: ColumnDef<{
       },
     ],
   },
-  // {
-  //   id: "pax",
-  //   header: () => <div className="text-right w-full">Pasajeros</div>,
-  //   accessorKey: "pax",
-  //   columns: [
-  //     {
-  //       id: "embarcada",
-  //       header: () => <div className="text-[8px]">Embarcada</div>,
-  //     },
-  //     {
-  //       id: "desembarcada",
-  //       header: () => <div className="text-[8px]">Desembarcada</div>,
-  //     },
-  //     {
-  //       id: "en_transito",
-  //       header: () => <div className="text-[8px]">En Transito</div>,
-  //     },
-  //   ],
-  // },
-  // {
-  //   id: "pax",
-  //   header: () => <div className="text-right w-full">Carga</div>,
-  //   accessorKey: "pax",
-  //   columns: [
-  //     {
-  //       id: "embarcada",
-  //       header: () => <div className="text-[8px]">Embarcada</div>,
-  //     },
-  //     {
-  //       id: "desembarcada",
-  //       header: () => <div className="text-[8px]">Desembarcada</div>,
-  //     },
-  //     {
-  //       id: "en_transito",
-  //       header: () => <div className="text-[8px]">En Transito</div>,
-  //     },
-  //   ],
-  // },
-  // {
-  //   id: "pax",
-  //   header: () => <div className="text-right w-full">Correo</div>,
-  //   accessorKey: "pax",
-  //   columns: [
-  //     {
-  //       id: "embarcada",
-  //       header: () => <div className="text-[8px]">Embarcada</div>,
-  //     },
-  //     {
-  //       id: "desembarcada",
-  //       header: () => <div className="text-[8px]">Desembarcada</div>,
-  //     },
-  //     {
-  //       id: "en_transito",
-  //       header: () => <div className="text-[8px]">En Transito</div>,
-  //     },
-  //   ],
-  // },
+
+  {
+    header: "Carga",
+    columns: [
+      {
+        header: "Embarcada",
+        columns: [
+          { accessorKey: "embarcada_paga", header: "Paga" },
+          { accessorKey: "embarcada_cortesia", header: "Cortesía" },
+        ],
+      },
+      {
+        header: "Desembarcada",
+        columns: [
+          { accessorKey: "desembarcada_paga", header: "Paga" },
+          { accessorKey: "desembarcada_cortesia", header: "Cortesía" },
+        ],
+      },
+      {
+        header: "En tránsito",
+        columns: [
+          { accessorKey: "en_transito_paga", header: "Paga" },
+          { accessorKey: "en_transito_cortesia", header: "Cortesía" },
+        ],
+      },
+    ],
+  },
+  {
+    header: "Correo",
+    columns: [
+      {
+        header: "Embarcada",
+        columns: [
+          { accessorKey: "embarcada_paga", header: "Paga" },
+          { accessorKey: "embarcada_cortesia", header: "Cortesía" },
+        ],
+      },
+      {
+        header: "Desembarcada",
+        columns: [
+          { accessorKey: "desembarcada_paga", header: "Paga" },
+          { accessorKey: "desembarcada_cortesia", header: "Cortesía" },
+        ],
+      },
+      {
+        header: "En tránsito",
+        columns: [
+          { accessorKey: "en_transito_paga", header: "Paga" },
+          { accessorKey: "en_transito_cortesia", header: "Cortesía" },
+        ],
+      },
+    ],
+  },
   {
     id: "actions",
     header: "Acciones",

@@ -71,14 +71,78 @@ export async function ListCargoMail() {
   // }));
   // return <DataTable columns={columns} data={movements} />; // Add your columns definition here
 
-  const cargoCorreo = await prisma.oper_pax_carga_correo.findMany({
-    orderBy: {
-      opcc_id: "desc",
-    },
-  });
-  console.log("🚀 ~ ListCargoMail ~ cargoCorreo:", cargoCorreo);
+  const cargoCorreo = (
+    await prisma.oper_pax_carga_correo.findMany({
+      orderBy: {
+        opcc_id: "desc",
+      },
+      include: {
+        oper_mov_flota_oper_mov_flota_opcc_idTooper_pax_carga_correo: {
+          select: {
+            opmf_date: true,
+            oper_aviones: {
+              select: { opav_matricula_avion: true },
+            },
+            oper_vuelos: {
+              select: {
+                opvu_co_vuelo: true,
+                oper_ruta: {
+                  select: {
+                    genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos:
+                      {
+                        select: {
+                          gear_co_iata_aeropuerto: true,
+                          gear_nm_aeropuerto: true,
+                        },
+                      },
+                    genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos:
+                      {
+                        select: {
+                          gear_co_iata_aeropuerto: true,
+                          gear_nm_aeropuerto: true,
+                        },
+                      },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+  ).map((cargo) => {
+    const mov = Array.isArray(
+      cargo.oper_mov_flota_oper_mov_flota_opcc_idTooper_pax_carga_correo
+    )
+      ? cargo.oper_mov_flota_oper_mov_flota_opcc_idTooper_pax_carga_correo[0]
+      : cargo.oper_mov_flota_oper_mov_flota_opcc_idTooper_pax_carga_correo;
 
-  return (
-    <DataTable classname="max-w-[500px]" columns={columns} data={cargoCorreo} />
-  );
+    return {
+      id: cargo.opcc_id,
+      date: mov?.opmf_date ? formatDate(mov.opmf_date) : mov?.opmf_date,
+      acft: mov?.oper_aviones?.opav_matricula_avion ?? "",
+      flight: mov?.oper_vuelos?.opvu_co_vuelo ?? "",
+      route: mov?.oper_vuelos?.oper_ruta
+        ? `${
+            mov.oper_vuelos.oper_ruta
+              .genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos
+              ?.gear_co_iata_aeropuerto ?? ""
+          } - ${
+            mov.oper_vuelos.oper_ruta
+              .genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos
+              ?.gear_co_iata_aeropuerto ?? ""
+          }`
+        : null,
+      origin:
+        mov?.oper_vuelos?.oper_ruta
+          ?.genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos
+          ?.gear_co_iata_aeropuerto ?? null,
+      destination:
+        mov?.oper_vuelos?.oper_ruta
+          ?.genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos
+          ?.gear_co_iata_aeropuerto ?? null,
+    };
+  });
+
+  return <DataTable columns={columns} data={cargoCorreo} />;
 }

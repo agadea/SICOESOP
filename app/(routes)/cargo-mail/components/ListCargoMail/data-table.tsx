@@ -65,7 +65,7 @@ export function DataTable<TData, TValue>({
   }
 
   return (
-    <div className="max-w-[1490px] p-4 bg-background shadow-md rounded-lg mt-4">
+    <div className="max-w-[1480px] p-4 bg-background shadow-md rounded-lg mt-4">
       <div className="flex items-center mb-2">
         <Input
           placeholder="Filter by any column..."
@@ -79,10 +79,14 @@ export function DataTable<TData, TValue>({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} colSpan={headerGroup.colSpan}>
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      colSpan={header.colSpan} //! esto ordenará las columnas automaticamente en la jerarquia, Viva Cristo Rey
+                      className="text-center"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
