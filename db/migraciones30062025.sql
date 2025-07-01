@@ -46,18 +46,20 @@ CREATE TABLE oper_correo (
 -- Alterar tabla existente para movimientos de flota
 ALTER TABLE oper.oper_mov_flota
 ADD COLUMN opcc_id INT,
-ADD CONSTRAINT fk_opcc_id FOREIGN KEY (opcc_id) REFERENCES oper.oper_pax_carga_correo(opcc_id) ON DELETE SET NULL;
 
 -- Agregar claves foráneas a la tabla central
 ALTER TABLE oper.oper_pax_carga_correo
 ADD CONSTRAINT fk_opmf_id FOREIGN KEY (opmf_id) REFERENCES oper.oper_mov_flota(opmf_id) ON DELETE CASCADE;
 
-ALTER TABLE oper.oper_pax_carga_correo
-ADD CONSTRAINT fk_oppa_id FOREIGN KEY (oppa_id) REFERENCES oper.oper_pax(opax_id) ON DELETE SET NULL;
+ALTER TABLE oper.oper_pax_carga_correo ADD CONSTRAINT oper_carga FOREIGN KEY (opca_id)
+REFERENCES oper.oper_carga(ocarga_id) ON DELETE SET NULL;
 
-ALTER TABLE oper.oper_pax_carga_correo
-ADD CONSTRAINT fk_opca_id FOREIGN KEY (opca_id) REFERENCES oper.oper_carga(ocarga_id) ON DELETE SET NULL;
+ALTER TABLE oper.oper_pax_carga_correo ADD CONSTRAINT oper_correo FOREIGN KEY (opco_id)
+REFERENCES oper.oper_correo(opcorreo_id) ON DELETE SET NULL;
 
-ALTER TABLE oper.oper_pax_carga_correo
-ADD CONSTRAINT fk_opco_id FOREIGN KEY (opco_id) REFERENCES oper.oper_correo(opcorreo_id) ON DELETE SET NULL;
+ALTER TABLE oper.oper_pax_carga_correo ADD CONSTRAINT oper_pax FOREIGN KEY (oppa_id)
+REFERENCES oper.oper_pax(opax_id) ON DELETE SET NULL;
+
+ALTER TABLE oper.oper_aviones
+ADD COLUMN opav_tipo_fuel_avion VARCHAR(25);
 

@@ -61,14 +61,14 @@ export function DataTable<TData, TValue>({
   });
 
   if (!isMounted) {
-    return null; // Prevent rendering until mounted
+    return null;
   }
 
   return (
-    <div className="max-w-[1480px] p-4 bg-background shadow-md rounded-lg mt-4">
+    <div className="max-w-[90dvw] p-4 bg-background shadow-md rounded-lg mt-4">
       <div className="flex items-center mb-2">
         <Input
-          placeholder="Filter by any column..."
+          placeholder="Filter by acft column..."
           value={table.getColumn("acft")?.getFilterValue() as string}
           onChange={(event) =>
             table.getColumn("acft")?.setFilterValue(event.target.value)

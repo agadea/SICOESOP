@@ -21,3 +21,12 @@ export function formatTime(value: Date | string): string {
     minute: "2-digit",
   });
 }
+
+export function formatDateSimple(value: Date | string): string {
+  const date = typeof value === "string" ? new Date(value) : value;
+  return date.toLocaleDateString("es-VE", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+}

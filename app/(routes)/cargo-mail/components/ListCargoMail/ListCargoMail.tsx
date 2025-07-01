@@ -1,87 +1,31 @@
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
-import { formatDecimalValue, formatDate, formatTime } from "@/lib/formatters";
+import { formatDecimalValue, formatDateSimple } from "@/lib/formatters";
 
 export async function ListCargoMail() {
-  // const {userId}
-  // const movements = (
-  //   await prisma.oper_mov_flota.findMany({
-  //     orderBy: {
-  //       opmf_date: "desc",
-  //     },
-  //     include: {
-  //       oper_aviones: {
-  //         select: { opav_matricula_avion: true },
-  //       },
-  //       oper_vuelos: {
-  //         select: {
-  //           opvu_co_vuelo: true,
-  //           oper_ruta: {
-  //             select: {
-  //               genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos:
-  //                 {
-  //                   select: {
-  //                     gear_co_iata_aeropuerto: true,
-  //                     gear_nm_aeropuerto: true,
-  //                   },
-  //                 },
-  //               genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos:
-  //                 {
-  //                   select: {
-  //                     gear_co_iata_aeropuerto: true,
-  //                     gear_nm_aeropuerto: true,
-  //                   },
-  //                 },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   })
-  // ).map((movement) => ({
-  //   ...movement,
-  //   id: movement.opmf_id,
-  //   date: movement.opmf_date
-  //     ? formatDate(movement.opmf_date)
-  //     : movement.opmf_date,
-  //   acft: movement.oper_aviones.opav_matricula_avion,
-  //   flight: movement.oper_vuelos.opvu_co_vuelo,
-  //   origin:
-  //     movement.oper_vuelos.oper_ruta
-  //       ?.genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos
-  //       ?.gear_co_iata_aeropuerto,
-  //   destination:
-  //     movement.oper_vuelos.oper_ruta
-  //       ?.genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos
-  //       ?.gear_co_iata_aeropuerto,
-  //   etd: movement.etd ? formatTime(movement.etd) : "N/A",
-  //   // cpta: movement ? formatTime(movement.etd) : "N/A",
-  //   fob: movement.fob ? formatDecimalValue(movement.fob) : "N/A",
-  //   fod: movement.fod ? formatDecimalValue(movement.fod) : "N/A",
-  //   fuel_consumed: movement.fuel_consumed
-  //     ? formatDecimalValue(movement.fuel_consumed)
-  //     : "N/A",
-  //   fuel_supplied: movement.fuel_supplied
-  //     ? formatDecimalValue(movement.fuel_supplied)
-  //     : "N/A",
-  //   ldw: movement.ldw ? formatDecimalValue(movement.ldw) : "N/A",
-  //   tow: movement.tow ? formatDecimalValue(movement.tow) : "N/A",
-  // }));
-  // return <DataTable columns={columns} data={movements} />; // Add your columns definition here
-
   const cargoCorreo = (
     await prisma.oper_pax_carga_correo.findMany({
       orderBy: {
         opcc_id: "desc",
       },
-      include: {
-        oper_mov_flota_oper_mov_flota_opcc_idTooper_pax_carga_correo: {
+      select: {
+        opcc_id: true,
+        oper_mov_flota: {
           select: {
             opmf_date: true,
             oper_aviones: {
-              select: { opav_matricula_avion: true },
+              select: {
+                opav_matricula_avion: true,
+                opav_tipo_fuel_avion: true,
+                opav_ca_passenger: true,
+                oper_modelo_aeronaves: {
+                  select: {
+                    opar_nm_mod_aeronave: true,
+                  },
+                },
+              },
             },
             oper_vuelos: {
               select: {
@@ -92,14 +36,12 @@ export async function ListCargoMail() {
                       {
                         select: {
                           gear_co_iata_aeropuerto: true,
-                          gear_nm_aeropuerto: true,
                         },
                       },
                     genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos:
                       {
                         select: {
                           gear_co_iata_aeropuerto: true,
-                          gear_nm_aeropuerto: true,
                         },
                       },
                   },
@@ -108,39 +50,93 @@ export async function ListCargoMail() {
             },
           },
         },
+        oper_carga: {
+          select: {
+            valor: true,
+            estado: true,
+            tipo: true,
+          },
+        },
+        oper_correo: {
+          select: {
+            valor: true,
+            estado: true,
+            tipo: true,
+          },
+        },
+        oper_pax: {
+          select: {
+            valor: true,
+            estado: true,
+            tipo: true,
+          },
+        },
       },
     })
   ).map((cargo) => {
-    const mov = Array.isArray(
-      cargo.oper_mov_flota_oper_mov_flota_opcc_idTooper_pax_carga_correo
-    )
-      ? cargo.oper_mov_flota_oper_mov_flota_opcc_idTooper_pax_carga_correo[0]
-      : cargo.oper_mov_flota_oper_mov_flota_opcc_idTooper_pax_carga_correo;
+    const movimiento = cargo.oper_mov_flota;
+    const vuelo = cargo.oper_mov_flota?.oper_vuelos;
+    const origen =
+      vuelo?.oper_ruta
+        ?.genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos
+        ?.gear_co_iata_aeropuerto;
+    const destino =
+      vuelo?.oper_ruta
+        ?.genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos
+        ?.gear_co_iata_aeropuerto;
+    const avion = cargo.oper_mov_flota.oper_aviones;
+    const modelo = avion?.oper_modelo_aeronaves?.opar_nm_mod_aeronave;
+    const carga = cargo.oper_carga;
+    const correo = cargo.oper_correo;
+    const pax = cargo.oper_pax;
 
     return {
       id: cargo.opcc_id,
-      date: mov?.opmf_date ? formatDate(mov.opmf_date) : mov?.opmf_date,
-      acft: mov?.oper_aviones?.opav_matricula_avion ?? "",
-      flight: mov?.oper_vuelos?.opvu_co_vuelo ?? "",
-      route: mov?.oper_vuelos?.oper_ruta
-        ? `${
-            mov.oper_vuelos.oper_ruta
-              .genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos
-              ?.gear_co_iata_aeropuerto ?? ""
-          } - ${
-            mov.oper_vuelos.oper_ruta
-              .genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos
-              ?.gear_co_iata_aeropuerto ?? ""
-          }`
-        : null,
-      origin:
-        mov?.oper_vuelos?.oper_ruta
-          ?.genr_aeropuertos_oper_ruta_opru_gear_aerop_origenTogenr_aeropuertos
-          ?.gear_co_iata_aeropuerto ?? null,
-      destination:
-        mov?.oper_vuelos?.oper_ruta
-          ?.genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos
-          ?.gear_co_iata_aeropuerto ?? null,
+      flight: vuelo.opvu_co_vuelo,
+      date: formatDateSimple(movimiento.opmf_date),
+      acft: avion.opav_matricula_avion,
+      route: vuelo.oper_ruta ? `${origen} - ${destino}` : null,
+      origin: origen ?? null,
+      destination: destino ?? null,
+      // pax values
+      pax_embarcada:
+        pax?.estado === "Embarcada"
+          ? `${pax?.tipo} - ${formatDecimalValue(pax?.valor)}`
+          : "-",
+      pax_desembarcada:
+        pax?.estado === "Desembarcada"
+          ? `${pax?.tipo} - ${formatDecimalValue(pax?.valor)}`
+          : "-",
+      pax_transito:
+        pax?.estado === "En_tr_nsito"
+          ? `${pax?.tipo} - ${formatDecimalValue(pax?.valor)}`
+          : "-",
+      // carga values
+      carga_embarcada:
+        carga?.estado === "Embarcada"
+          ? `${carga?.tipo} - ${formatDecimalValue(carga?.valor)}`
+          : "-",
+      carga_desembarcada:
+        carga?.estado === "Desembarcada"
+          ? `${carga?.tipo} - ${formatDecimalValue(carga?.valor)}`
+          : "-",
+      carga_transito:
+        carga?.estado === "En_tr_nsito"
+          ? `${carga?.tipo} - ${formatDecimalValue(carga?.valor)}`
+          : "-",
+      // correo values
+      correo_embarcada:
+        correo?.estado === "Embarcada"
+          ? `${correo?.tipo} - ${formatDecimalValue(correo?.valor)}`
+          : "-",
+      correo_desembarcada:
+        correo?.estado === "Desembarcada"
+          ? `${correo?.tipo} - ${formatDecimalValue(correo?.valor)}`
+          : "-",
+      correo_transito:
+        correo?.estado === "En_tr_nsito"
+          ? `${correo?.tipo} - ${formatDecimalValue(correo?.valor)}`
+          : "-",
     };
   });
 

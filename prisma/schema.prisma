@@ -11,30 +11,29 @@ datasource db {
 }
 
 model oper_mov_flota {
-  opmf_id                                                             Int                     @id @default(autoincrement())
-  created_at                                                          DateTime                @default(now()) @db.Timestamp(6)
-  opmf_opav_id_avion                                                  Int
-  opmf_opvu_id_vuelo                                                  Int
-  pax                                                                 Int?
-  runway                                                              String?                 @db.VarChar(10)
-  opmf_date                                                           DateTime                @db.Date
-  etd                                                                 DateTime?               @db.Timestamp(6)
-  atd                                                                 DateTime?               @db.Timestamp(6)
-  eta                                                                 DateTime?               @db.Timestamp(6)
-  ata                                                                 DateTime?               @db.Timestamp(6)
-  flight_time_min                                                     Int?
-  block_time_min                                                      Int?
-  fob                                                                 Decimal?                @db.Decimal(10, 2)
-  fod                                                                 Decimal?                @db.Decimal(10, 2)
-  fuel_consumed                                                       Decimal?                @db.Decimal(10, 2)
-  fuel_supplied                                                       Decimal?                @db.Decimal(10, 2)
-  ldw                                                                 Decimal?                @db.Decimal(10, 2)
-  tow                                                                 Decimal?                @db.Decimal(10, 2)
-  opcc_id                                                             Int?
-  oper_pax_carga_correo_oper_mov_flota_opcc_idTooper_pax_carga_correo oper_pax_carga_correo?  @relation("oper_mov_flota_opcc_idTooper_pax_carga_correo", fields: [opcc_id], references: [opcc_id], onUpdate: NoAction, map: "fk_opcc_id")
-  oper_aviones                                                        oper_aviones            @relation(fields: [opmf_opav_id_avion], references: [opav_id_avion], onDelete: NoAction, onUpdate: NoAction, map: "oper_mov_flota_oper_aviones_fk")
-  oper_vuelos                                                         oper_vuelos             @relation(fields: [opmf_opvu_id_vuelo], references: [opvu_id_vuelo], onDelete: NoAction, onUpdate: NoAction, map: "oper_mov_flota_oper_vuelos_fk")
-  oper_pax_carga_correo_oper_pax_carga_correo_opmf_idTooper_mov_flota oper_pax_carga_correo[] @relation("oper_pax_carga_correo_opmf_idTooper_mov_flota")
+  opmf_id               Int                     @id @default(autoincrement())
+  created_at            DateTime                @default(now()) @db.Timestamp(6)
+  opmf_opav_id_avion    Int
+  opmf_opvu_id_vuelo    Int
+  pax                   Int?
+  runway                String?                 @db.VarChar(10)
+  opmf_date             DateTime                @db.Date
+  etd                   DateTime?               @db.Timestamp(6)
+  atd                   DateTime?               @db.Timestamp(6)
+  eta                   DateTime?               @db.Timestamp(6)
+  ata                   DateTime?               @db.Timestamp(6)
+  flight_time_min       Int?
+  block_time_min        Int?
+  fob                   Decimal?                @db.Decimal(10, 2)
+  fod                   Decimal?                @db.Decimal(10, 2)
+  fuel_consumed         Decimal?                @db.Decimal(10, 2)
+  fuel_supplied         Decimal?                @db.Decimal(10, 2)
+  ldw                   Decimal?                @db.Decimal(10, 2)
+  tow                   Decimal?                @db.Decimal(10, 2)
+  opcc_id               Int?
+  oper_aviones          oper_aviones            @relation(fields: [opmf_opav_id_avion], references: [opav_id_avion], onDelete: NoAction, onUpdate: NoAction, map: "oper_mov_flota_oper_aviones_fk")
+  oper_vuelos           oper_vuelos             @relation(fields: [opmf_opvu_id_vuelo], references: [opvu_id_vuelo], onDelete: NoAction, onUpdate: NoAction, map: "oper_mov_flota_oper_vuelos_fk")
+  oper_pax_carga_correo oper_pax_carga_correo[]
 
   @@schema("oper")
 }
@@ -269,6 +268,8 @@ model oper_aviones {
   opav_fe_reg               DateTime?             @db.Date
   opav_co_usuario           String?               @db.VarChar(10)
   opav_fe_modif             DateTime?             @db.Date
+  opav_tipo_fuel_avion      String?               @db.VarChar(25)
+  opav_pax_capacity_avion   String?               @db.VarChar(25)
   oper_modelo_aeronaves     oper_modelo_aeronaves @relation(fields: [opav_opar_id_mod_aeronave], references: [opar_id_mod_aeronave], onDelete: Cascade, map: "oper_aviones_oper_modelo_aeronaves_fk")
   oper_mov_flota            oper_mov_flota[]
 
@@ -1327,55 +1328,48 @@ model tecn_usuarios {
 }
 
 model oper_carga {
-  ocarga_id                                                       Int                     @id @default(autoincrement())
-  estado                                                          oper_pacc_estado_enum
-  tipo                                                            oper_pacc_tipo_enum
-  valor                                                           Decimal                 @db.Decimal(10, 2)
-  opcc_id                                                         Int?
-  oper_pax_carga_correo_oper_carga_opcc_idTooper_pax_carga_correo oper_pax_carga_correo?  @relation("oper_carga_opcc_idTooper_pax_carga_correo", fields: [opcc_id], references: [opcc_id], onUpdate: NoAction)
-  oper_pax_carga_correo_oper_pax_carga_correo_opca_idTooper_carga oper_pax_carga_correo[] @relation("oper_pax_carga_correo_opca_idTooper_carga")
+  ocarga_id             Int                     @id @default(autoincrement())
+  estado                oper_pacc_estado_enum
+  tipo                  oper_pacc_tipo_enum
+  valor                 Decimal                 @db.Decimal(10, 2)
+  opcc_id               Int?
+  oper_pax_carga_correo oper_pax_carga_correo[]
 
   @@schema("oper")
 }
 
 model oper_correo {
-  opcorreo_id                                                      Int                     @id @default(autoincrement())
-  estado                                                           oper_pacc_estado_enum
-  tipo                                                             oper_pacc_tipo_enum
-  valor                                                            Decimal                 @db.Decimal(10, 2)
-  opcc_id                                                          Int?
-  oper_pax_carga_correo_oper_correo_opcc_idTooper_pax_carga_correo oper_pax_carga_correo?  @relation("oper_correo_opcc_idTooper_pax_carga_correo", fields: [opcc_id], references: [opcc_id], onUpdate: NoAction)
-  oper_pax_carga_correo_oper_pax_carga_correo_opco_idTooper_correo oper_pax_carga_correo[] @relation("oper_pax_carga_correo_opco_idTooper_correo")
+  opcorreo_id           Int                     @id @default(autoincrement())
+  estado                oper_pacc_estado_enum
+  tipo                  oper_pacc_tipo_enum
+  valor                 Decimal                 @db.Decimal(10, 2)
+  opcc_id               Int?
+  oper_pax_carga_correo oper_pax_carga_correo[]
 
   @@schema("oper")
 }
 
 model oper_pax {
-  opax_id                                                       Int                     @id @default(autoincrement())
-  estado                                                        oper_pacc_estado_enum
-  tipo                                                          oper_pacc_tipo_enum
-  valor                                                         Decimal                 @db.Decimal(10, 2)
-  opcc_id                                                       Int?
-  oper_pax_carga_correo_oper_pax_opcc_idTooper_pax_carga_correo oper_pax_carga_correo?  @relation("oper_pax_opcc_idTooper_pax_carga_correo", fields: [opcc_id], references: [opcc_id], onUpdate: NoAction)
-  oper_pax_carga_correo_oper_pax_carga_correo_oppa_idTooper_pax oper_pax_carga_correo[] @relation("oper_pax_carga_correo_oppa_idTooper_pax")
+  opax_id               Int                     @id @default(autoincrement())
+  estado                oper_pacc_estado_enum
+  tipo                  oper_pacc_tipo_enum
+  valor                 Decimal                 @db.Decimal(10, 2)
+  opcc_id               Int?
+  oper_pax_carga_correo oper_pax_carga_correo[]
 
   @@schema("oper")
 }
 
 model oper_pax_carga_correo {
-  opcc_id                                                      Int              @id @default(autoincrement())
-  opmf_id                                                      Int
-  oppa_id                                                      Int?
-  opca_id                                                      Int?
-  opco_id                                                      Int?
-  oper_carga_oper_carga_opcc_idTooper_pax_carga_correo         oper_carga[]     @relation("oper_carga_opcc_idTooper_pax_carga_correo")
-  oper_correo_oper_correo_opcc_idTooper_pax_carga_correo       oper_correo[]    @relation("oper_correo_opcc_idTooper_pax_carga_correo")
-  oper_mov_flota_oper_mov_flota_opcc_idTooper_pax_carga_correo oper_mov_flota[] @relation("oper_mov_flota_opcc_idTooper_pax_carga_correo")
-  oper_pax_oper_pax_opcc_idTooper_pax_carga_correo             oper_pax[]       @relation("oper_pax_opcc_idTooper_pax_carga_correo")
-  oper_carga_oper_pax_carga_correo_opca_idTooper_carga         oper_carga?      @relation("oper_pax_carga_correo_opca_idTooper_carga", fields: [opca_id], references: [ocarga_id], onUpdate: NoAction, map: "fk_opca_id")
-  oper_correo_oper_pax_carga_correo_opco_idTooper_correo       oper_correo?     @relation("oper_pax_carga_correo_opco_idTooper_correo", fields: [opco_id], references: [opcorreo_id], onUpdate: NoAction, map: "fk_opco_id")
-  oper_mov_flota_oper_pax_carga_correo_opmf_idTooper_mov_flota oper_mov_flota   @relation("oper_pax_carga_correo_opmf_idTooper_mov_flota", fields: [opmf_id], references: [opmf_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_opmf_id")
-  oper_pax_oper_pax_carga_correo_oppa_idTooper_pax             oper_pax?        @relation("oper_pax_carga_correo_oppa_idTooper_pax", fields: [oppa_id], references: [opax_id], onUpdate: NoAction, map: "fk_oppa_id")
+  opcc_id        Int            @id @default(autoincrement())
+  opmf_id        Int
+  oppa_id        Int?
+  opca_id        Int?
+  opco_id        Int?
+  oper_mov_flota oper_mov_flota @relation(fields: [opmf_id], references: [opmf_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_opmf_id")
+  oper_carga     oper_carga?    @relation(fields: [opca_id], references: [ocarga_id], onUpdate: NoAction, map: "oper_carga")
+  oper_correo    oper_correo?   @relation(fields: [opco_id], references: [opcorreo_id], onUpdate: NoAction, map: "oper_correo")
+  oper_pax       oper_pax?      @relation(fields: [oppa_id], references: [opax_id], onUpdate: NoAction, map: "oper_pax")
 
   @@schema("oper")
 }

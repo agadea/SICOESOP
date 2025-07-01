@@ -21,6 +21,10 @@ export const columns: ColumnDef<{
   route: string | null;
   origin: string | null;
   destination: string | null;
+  // pax values
+  pax_embarcada: string;
+  pax_desembarcada: string;
+  pax_transito: string;
 }>[] = [
   {
     accessorKey: "date",
@@ -34,78 +38,71 @@ export const columns: ColumnDef<{
     columns: [
       {
         header: "Embarcada",
-        columns: [
-          { accessorKey: "embarcada_paga", header: "Paga" },
-          { accessorKey: "embarcada_cortesia", header: "Cortesía" },
-        ],
+        accessorKey: "pax_embarcada",
       },
       {
         header: "Desembarcada",
-        columns: [
-          { accessorKey: "desembarcada_paga", header: "Paga" },
-          { accessorKey: "desembarcada_cortesia", header: "Cortesía" },
-        ],
+        accessorKey: "pax_desembarcada",
       },
       {
         header: "En tránsito",
-        columns: [
-          { accessorKey: "en_transito_paga", header: "Paga" },
-          { accessorKey: "en_transito_cortesia", header: "Cortesía" },
-        ],
-      },
-    ],
-  },
-
-  {
-    header: "Carga",
-    columns: [
-      {
-        header: "Embarcada",
-        columns: [
-          { accessorKey: "embarcada_paga", header: "Paga" },
-          { accessorKey: "embarcada_cortesia", header: "Cortesía" },
-        ],
-      },
-      {
-        header: "Desembarcada",
-        columns: [
-          { accessorKey: "desembarcada_paga", header: "Paga" },
-          { accessorKey: "desembarcada_cortesia", header: "Cortesía" },
-        ],
-      },
-      {
-        header: "En tránsito",
-        columns: [
-          { accessorKey: "en_transito_paga", header: "Paga" },
-          { accessorKey: "en_transito_cortesia", header: "Cortesía" },
-        ],
+        accessorKey: "pax_transito",
       },
     ],
   },
   {
-    header: "Correo",
+    header: "Carga (Kg.)",
     columns: [
       {
         header: "Embarcada",
-        columns: [
-          { accessorKey: "embarcada_paga", header: "Paga" },
-          { accessorKey: "embarcada_cortesia", header: "Cortesía" },
-        ],
+        accessorKey: "carga_embarcada",
       },
       {
         header: "Desembarcada",
-        columns: [
-          { accessorKey: "desembarcada_paga", header: "Paga" },
-          { accessorKey: "desembarcada_cortesia", header: "Cortesía" },
-        ],
+        accessorKey: "carga_desembarcada",
       },
       {
         header: "En tránsito",
-        columns: [
-          { accessorKey: "en_transito_paga", header: "Paga" },
-          { accessorKey: "en_transito_cortesia", header: "Cortesía" },
-        ],
+        accessorKey: "carga_transito",
       },
+    ],
+  },
+  {
+    header: "Correo (Kg.)",
+    columns: [
+      {
+        header: "Embarcada",
+        accessorKey: "correo_embarcada",
+      },
+      {
+        header: "Desembarcada",
+        accessorKey: "correo_desembarcada",
+      },
+      {
+        header: "En tránsito",
+        accessorKey: "correo_transito",
+      },
+      // {
+      //   header: "Embarcada",
+      //   // columns: [
+      //   //   { accessorKey: "embarcada_paga", header: "Paga" },
+      //   //   { accessorKey: "embarcada_cortesia", header: "Cortesía" },
+      //   // ],
+      // },
+      // {
+      //   header: "Desembarcada",
+      //   // columns: [
+      //   //   { accessorKey: "desembarcada_paga", header: "Paga" },
+      //   //   { accessorKey: "desembarcada_cortesia", header: "Cortesía" },
+      //   // ],
+      // },
+      // {
+      //   header: "En tránsito",
+      //   // columns: [
+      //   //   { accessorKey: "en_transito_paga", header: "Paga" },
+      //   //   { accessorKey: "en_transito_cortesia", header: "Cortesía" },
+      //   // ],
+      // },
     ],
   },
   {
