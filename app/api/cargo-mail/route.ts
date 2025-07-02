@@ -1,4 +1,4 @@
-import { oper_modelo_aeronaves, oper_pax } from './../../../lib/generated/prisma/index.d';
+
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { oper_pacc_estado_enum, oper_pacc_tipo_enum } from "@/lib/generated/prisma";
