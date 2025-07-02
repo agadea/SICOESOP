@@ -8,7 +8,9 @@ export async function ListCargoMail() {
   const cargoCorreo = (
     await prisma.oper_pax_carga_correo.findMany({
       orderBy: {
-        opcc_id: "desc",
+        oper_mov_flota: {
+          opmf_date: "desc",
+        },
       },
       select: {
         opcc_id: true,
@@ -20,11 +22,6 @@ export async function ListCargoMail() {
                 opav_matricula_avion: true,
                 opav_tipo_fuel_avion: true,
                 opav_ca_passenger: true,
-                oper_modelo_aeronaves: {
-                  select: {
-                    opar_nm_mod_aeronave: true,
-                  },
-                },
               },
             },
             oper_vuelos: {
@@ -85,19 +82,18 @@ export async function ListCargoMail() {
         ?.genr_aeropuertos_oper_ruta_opru_gear_aerop_destinoTogenr_aeropuertos
         ?.gear_co_iata_aeropuerto;
     const avion = cargo.oper_mov_flota.oper_aviones;
-    const modelo = avion?.oper_modelo_aeronaves?.opar_nm_mod_aeronave;
     const carga = cargo.oper_carga;
     const correo = cargo.oper_correo;
     const pax = cargo.oper_pax;
 
     return {
       id: cargo.opcc_id,
-      flight: vuelo.opvu_co_vuelo,
-      date: formatDateSimple(movimiento.opmf_date),
-      acft: avion.opav_matricula_avion,
-      route: vuelo.oper_ruta ? `${origen} - ${destino}` : null,
-      origin: origen ?? null,
-      destination: destino ?? null,
+      flight: vuelo?.opvu_co_vuelo || "-",
+      date: formatDateSimple(movimiento?.opmf_date || new Date()),
+      acft: avion?.opav_matricula_avion || null,
+      route: origen && destino ? `${origen} - ${destino}` : "-",
+      origin: origen || null,
+      destination: destino || null,
       // pax values
       pax_embarcada:
         pax?.estado === "Embarcada"

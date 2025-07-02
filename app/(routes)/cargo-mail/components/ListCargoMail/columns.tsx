@@ -16,15 +16,23 @@ import Link from "next/link";
 export const columns: ColumnDef<{
   id: number;
   date: string;
-  acft: string;
+  acft: string | null;
   flight: string;
-  route: string | null;
+  route: string;
   origin: string | null;
   destination: string | null;
   // pax values
   pax_embarcada: string;
   pax_desembarcada: string;
   pax_transito: string;
+  // carga values
+  carga_embarcada: string;
+  carga_desembarcada: string;
+  carga_transito: string;
+  // correo values
+  correo_embarcada: string;
+  correo_desembarcada: string;
+  correo_transito: string;
 }>[] = [
   {
     accessorKey: "date",
@@ -82,27 +90,6 @@ export const columns: ColumnDef<{
         header: "En tránsito",
         accessorKey: "correo_transito",
       },
-      // {
-      //   header: "Embarcada",
-      //   // columns: [
-      //   //   { accessorKey: "embarcada_paga", header: "Paga" },
-      //   //   { accessorKey: "embarcada_cortesia", header: "Cortesía" },
-      //   // ],
-      // },
-      // {
-      //   header: "Desembarcada",
-      //   // columns: [
-      //   //   { accessorKey: "desembarcada_paga", header: "Paga" },
-      //   //   { accessorKey: "desembarcada_cortesia", header: "Cortesía" },
-      //   // ],
-      // },
-      // {
-      //   header: "En tránsito",
-      //   // columns: [
-      //   //   { accessorKey: "en_transito_paga", header: "Paga" },
-      //   //   { accessorKey: "en_transito_cortesia", header: "Cortesía" },
-      //   // ],
-      // },
     ],
   },
   {
