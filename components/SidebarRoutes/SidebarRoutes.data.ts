@@ -4,27 +4,26 @@ import {
   PanelsTopLeft,
   Settings,
   ShieldCheck,
-  CircleHelpIcon,
-  Calendar,
+  Printer,
   Truck
 } from 'lucide-react'
 
 export const dataGeneralSidebar = [
   {
     icon: PanelsTopLeft,
-    label: "Dashboard",
+    label: "Panel Principal",
     href: "/"
   },
   {
     icon: Building2,
     label: "Carga y Correo",
-    href: "/carga-correo"
+    href: "/cargo-mail"
   },
-  {
-    icon: Calendar,
-    label: "Demoras",
-    href: "/demora"
-  },
+  // {
+  //   icon: Calendar,
+  //   label: "Demoras",
+  //   href: "/demora"
+  // },
   {
     icon: Truck,
     label: "Movimiento de Flota",
@@ -34,13 +33,13 @@ export const dataGeneralSidebar = [
 
 export const dataToolsSidebar = [
   {
-    icon: CircleHelpIcon,
-    label: "Faqs",
-    href: "/faqs"
+    icon: Printer,
+    label: "Reportes",
+    href: "/reports"
   },
   {
     icon: BarChart4,
-    label: "Analytics",
+    label: "Analiticas",
     href: "/analytics"
   }
 ]
@@ -48,12 +47,12 @@ export const dataToolsSidebar = [
 export const dataSupportSidebar = [
   {
     icon: Settings,
-    label: "Settings",
+    label: "Ajustes",
     href: "/settings"
   },
   {
     icon: ShieldCheck,
-    label: "Security",
+    label: "Seguridad",
     href: "/security"
   }
 ]
