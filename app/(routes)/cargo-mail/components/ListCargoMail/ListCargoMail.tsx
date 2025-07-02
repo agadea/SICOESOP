@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { formatDecimalValue, formatDateSimple } from "@/lib/formatters";
+import { transformEnumValue } from "@/lib/utils/transformEnumValue";
 
 export async function ListCargoMail() {
   const cargoCorreo = (
@@ -97,41 +98,59 @@ export async function ListCargoMail() {
       // pax values
       pax_embarcada:
         pax?.estado === "Embarcada"
-          ? `${pax?.tipo} - ${formatDecimalValue(pax?.valor)}`
+          ? `${transformEnumValue(pax?.tipo)} - ${formatDecimalValue(
+              pax?.valor
+            )}`
           : "-",
       pax_desembarcada:
         pax?.estado === "Desembarcada"
-          ? `${pax?.tipo} - ${formatDecimalValue(pax?.valor)}`
+          ? `${transformEnumValue(pax?.tipo)} - ${formatDecimalValue(
+              pax?.valor
+            )}`
           : "-",
       pax_transito:
-        pax?.estado === "En_tr_nsito"
-          ? `${pax?.tipo} - ${formatDecimalValue(pax?.valor)}`
+        transformEnumValue(pax?.estado ?? "") === "En tránsito"
+          ? `${transformEnumValue(pax?.tipo ?? "")} - ${formatDecimalValue(
+              pax?.valor ?? 0
+            )}`
           : "-",
       // carga values
       carga_embarcada:
         carga?.estado === "Embarcada"
-          ? `${carga?.tipo} - ${formatDecimalValue(carga?.valor)}`
+          ? `${transformEnumValue(carga?.tipo)} - ${formatDecimalValue(
+              carga?.valor
+            )}`
           : "-",
       carga_desembarcada:
         carga?.estado === "Desembarcada"
-          ? `${carga?.tipo} - ${formatDecimalValue(carga?.valor)}`
+          ? `${transformEnumValue(carga?.tipo)} - ${formatDecimalValue(
+              carga?.valor
+            )}`
           : "-",
       carga_transito:
-        carga?.estado === "En_tr_nsito"
-          ? `${carga?.tipo} - ${formatDecimalValue(carga?.valor)}`
+        transformEnumValue(carga?.estado ?? "") === "En tránsito"
+          ? `${transformEnumValue(carga?.tipo ?? "")} - ${formatDecimalValue(
+              carga?.valor ?? 0
+            )}`
           : "-",
       // correo values
       correo_embarcada:
         correo?.estado === "Embarcada"
-          ? `${correo?.tipo} - ${formatDecimalValue(correo?.valor)}`
+          ? `${transformEnumValue(correo?.tipo)} - ${formatDecimalValue(
+              correo?.valor
+            )}`
           : "-",
       correo_desembarcada:
         correo?.estado === "Desembarcada"
-          ? `${correo?.tipo} - ${formatDecimalValue(correo?.valor)}`
+          ? `${transformEnumValue(correo?.tipo)} - ${formatDecimalValue(
+              correo?.valor
+            )}`
           : "-",
       correo_transito:
-        correo?.estado === "En_tr_nsito"
-          ? `${correo?.tipo} - ${formatDecimalValue(correo?.valor)}`
+        transformEnumValue(correo?.estado ?? "") === "En tránsito"
+          ? `${transformEnumValue(correo?.tipo ?? "")} - ${formatDecimalValue(
+              correo?.valor ?? 0
+            )}`
           : "-",
     };
   });
