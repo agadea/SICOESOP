@@ -21,10 +21,10 @@ export const columns: ColumnDef<{
   origin: string | null;
   destination: string | null;
   etd: string;
-  fob: number | string;
-  fod: number | string;
-  fuel_consumed: number | string;
-  fuel_supplied: number | string;
+  fob: number | null;
+  fod: number | null;
+  fuel_consumed: number | null;
+  fuel_supplied: number | null;
 
   pax: number | null;
   runway: string | null;
@@ -33,8 +33,7 @@ export const columns: ColumnDef<{
   ata: Date | null;
   flight_time_min: number | null;
   block_time_min: number | null;
-  ldw: number | string;
-  tow: number | string;
+  tow: number | null;
 }>[] = [
   {
     accessorKey: "date",

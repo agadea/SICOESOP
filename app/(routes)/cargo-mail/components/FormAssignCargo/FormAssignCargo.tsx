@@ -106,67 +106,6 @@ export function FormAssignCargo(props: FormAssignCargoProps) {
           <div className="grid grid-cols-2 gap-3">
             <FormField
               control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="shadcn" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Enter the name of the fleet movement.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Date</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="date"
-                      {...field}
-                      value={
-                        field.value
-                          ? (field.value instanceof Date
-                              ? field.value
-                              : new Date(field.value)
-                            )
-                              .toISOString()
-                              .split("T")[0]
-                          : ""
-                      }
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Select the date of the fleet movement.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Optional description" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Provide an optional description for the fleet movement.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="fleetMovement_id"
               render={({ field }) => (
                 <FormItem>
