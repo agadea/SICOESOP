@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { oper_pacc_estado_enum, oper_pacc_tipo_enum } from "@/lib/generated/prisma";
@@ -190,12 +189,21 @@ function validateRequestBody(bodyMapped: any) {
     throw new Error("El cuerpo del request está incompleto o tiene valores inválidos.");
   }
 
-  if (!Object.keys(estadoEnum).includes(bodyMapped.carga.estado)) {
-    throw new Error(`Estado de carga inválido: ${bodyMapped.carga.estado}`);
+  if (!Object.keys(estadoEnum).includes(bodyMapped.pax.estado)) {
+    throw new Error(`Estado de pasajero inválido: ${bodyMapped.pax.estado}`);
   }
-  if (!Object.keys(tipoEnum).includes(bodyMapped.carga.tipo)) {
-    throw new Error(`Tipo de carga inválido: ${bodyMapped.carga.tipo}`);
+  if (!Object.keys(tipoEnum).includes(bodyMapped.pax.tipo)) {
+    throw new Error(`Tipo de pasajero inválido: ${bodyMapped.pax.tipo}`);
   }
+
+  bodyMapped.pax.estado = estadoEnum[bodyMapped.pax.estado];
+  bodyMapped.pax.tipo = tipoEnum[bodyMapped.pax.tipo];
+  bodyMapped.carga.estado = estadoEnum[bodyMapped.carga.estado];
+  bodyMapped.carga.tipo = tipoEnum[bodyMapped.carga.tipo];
+  bodyMapped.correo.estado = estadoEnum[bodyMapped.correo.estado];
+  bodyMapped.correo.tipo = tipoEnum[bodyMapped.correo.tipo];
+
+  console.log("Valores transformados:", bodyMapped);
 }
 
 async function createPaxCargaCorreo(bodyMapped: any) {
@@ -209,8 +217,8 @@ async function createPaxCargaCorreo(bodyMapped: any) {
 async function createPax(bodyMapped: any, opcc_id: number) {
   return await prisma.oper_pax.create({
     data: {
-      estado: "Embarcada",
-      tipo: "Paga",
+      estado: bodyMapped.pax.estado, // Usar directamente el valor transformado
+      tipo: bodyMapped.pax.tipo, // Usar directamente el valor transformado
       valor: bodyMapped.pax.valor,
       opcc_id,
     },
@@ -220,8 +228,8 @@ async function createPax(bodyMapped: any, opcc_id: number) {
 async function createCarga(bodyMapped: any, opcc_id: number) {
   return await prisma.oper_carga.create({
     data: {
-      estado: estadoEnum[bodyMapped.carga.estado as keyof typeof estadoEnum],
-      tipo: tipoEnum[bodyMapped.carga.tipo as keyof typeof tipoEnum],
+      estado: bodyMapped.carga.estado, // Usar directamente el valor transformado
+      tipo: bodyMapped.carga.tipo, // Usar directamente el valor transformado
       valor: bodyMapped.carga.valor,
       opcc_id,
     },
@@ -231,8 +239,8 @@ async function createCarga(bodyMapped: any, opcc_id: number) {
 async function createCorreo(bodyMapped: any, opcc_id: number) {
   return await prisma.oper_correo.create({
     data: {
-      estado: "Desembarcada",
-      tipo: "Paga",
+      estado: bodyMapped.correo.estado, // Usar directamente el valor transformado
+      tipo: bodyMapped.correo.tipo, // Usar directamente el valor transformado
       valor: bodyMapped.correo.valor,
       opcc_id,
     },

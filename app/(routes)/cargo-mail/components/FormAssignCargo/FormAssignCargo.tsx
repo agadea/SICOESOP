@@ -88,6 +88,26 @@ export function FormAssignCargo(props: FormAssignCargoProps) {
 
   const { isValid } = form.formState;
 
+  const sendFormData = async (formData: z.infer<typeof formSchema>) => {
+    try {
+      const response = await fetch("/api/cargo-mail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al enviar el formulario");
+      }
+
+      const result = await response.json();
+    } catch (error) {
+      console.error("Error al enviar los datos del formulario:", error);
+    }
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const payload = {
@@ -95,7 +115,7 @@ export function FormAssignCargo(props: FormAssignCargoProps) {
         opmf_id: Number(values.opmf_id),
       };
 
-      console.log("Form submitted with values:", payload);
+      await sendFormData(payload);
       router.refresh();
       setOpenModalAdd(false);
     } catch (error) {
