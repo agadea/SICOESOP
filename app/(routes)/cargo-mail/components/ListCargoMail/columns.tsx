@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
@@ -97,6 +98,7 @@ export const columns: ColumnDef<{
     header: "Acciones",
     cell: ({ row }) => {
       const { id } = row.original;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -112,6 +114,10 @@ export const columns: ColumnDef<{
                 Editar
               </DropdownMenuItem>
             </Link>
+            <DropdownMenuItem onClick={() => handleDelete(id)}>
+              <Trash className="w-4 h-4 mr-2" />
+              Eliminar
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -119,3 +125,27 @@ export const columns: ColumnDef<{
     enableHiding: false,
   },
 ];
+
+async function handleDelete(id: number) {
+  try {
+    const response = await fetch(`/api/cargo-mail`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ opcc_id: id }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.error || "Error desconocido al eliminar el registro"
+      );
+    }
+
+    alert("Registro eliminado correctamente.");
+  } catch (error: any) {
+    console.error("Error en handleDelete:", error);
+    alert(`No se pudo eliminar el registro: ${error.message}`);
+  }
+}

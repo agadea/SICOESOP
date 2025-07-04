@@ -141,6 +141,30 @@ export async function POST(request: Request) {
   }
 }
 
+export async function DELETE(request: Request) {
+  try {
+    const { opcc_id } = await request.json();
+
+    if (!opcc_id) {
+      return NextResponse.json({ error: "El opcc_id es requerido para eliminar registros." }, { status: 400 });
+    }
+
+    const existingRecord = await prisma.oper_pax_carga_correo.findUnique({
+      where: { opcc_id },
+    });
+
+    if (!existingRecord) {
+      return NextResponse.json({ error: "El opcc_id no existe en la base de datos." }, { status: 404 });
+    }
+
+    const result = await deleteCargaCorreo(opcc_id);
+
+    return NextResponse.json(result, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json({ error: `Error al eliminar registros: ${error.message}` }, { status: 500 });
+  }
+}
+
 function mapRequestBody(data: any) {
   return {
     pax: {
@@ -268,4 +292,28 @@ async function updateMovFlota(opmf_id: number, opcc_id: number) {
       opcc_id: opcc_id,
     },
   });
+}
+
+async function deleteCargaCorreo(opcc_id: number) {
+  try {
+    await prisma.oper_carga.deleteMany({
+      where: { opcc_id },
+    });
+
+    await prisma.oper_correo.deleteMany({
+      where: { opcc_id },
+    });
+
+    await prisma.oper_pax.deleteMany({
+      where: { opcc_id },
+    });
+
+    await prisma.oper_pax_carga_correo.delete({
+      where: { opcc_id },
+    });
+
+    return { message: "Registros de carga, correo y el registro principal eliminados correctamente." };
+  } catch (error: any) {
+    throw new Error(`Error al eliminar registros: ${error.message}`);
+  }
 }
