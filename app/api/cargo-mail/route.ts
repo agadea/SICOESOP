@@ -111,27 +111,31 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    const newPaxCargaCorreo = await createPaxCargaCorreo(bodyMapped);
+    const result = await prisma.$transaction(async (prisma) => {
+      const newPaxCargaCorreo = await createPaxCargaCorreo(bodyMapped);
 
-    const newPax = await createPax(bodyMapped, newPaxCargaCorreo.opcc_id);
-    const newCarga = await createCarga(bodyMapped, newPaxCargaCorreo.opcc_id);
-    const newCorreo = await createCorreo(bodyMapped, newPaxCargaCorreo.opcc_id);
+      const newPax = await createPax(bodyMapped, newPaxCargaCorreo.opcc_id);
+      const newCarga = await createCarga(bodyMapped, newPaxCargaCorreo.opcc_id);
+      const newCorreo = await createCorreo(bodyMapped, newPaxCargaCorreo.opcc_id);
 
-    const updatedPaxCargaCorreo = await updatePaxCargaCorreo(newPaxCargaCorreo.opcc_id, newPax.opax_id, newCarga.ocarga_id, newCorreo.opcorreo_id);
+      const updatedPaxCargaCorreo = await updatePaxCargaCorreo(newPaxCargaCorreo.opcc_id, newPax.opax_id, newCarga.ocarga_id, newCorreo.opcorreo_id);
 
-    if (!updatedPaxCargaCorreo) {
-      throw new Error("No se pudo actualizar las referencias en oper_pax_carga_correo.");
-    }
+      if (!updatedPaxCargaCorreo) {
+        throw new Error("No se pudo actualizar las referencias en oper_pax_carga_correo.");
+      }
 
-    const updatedMovFlota = await updateMovFlota(bodyMapped.opmf_id, newPaxCargaCorreo.opcc_id);
+      const updatedMovFlota = await updateMovFlota(bodyMapped.opmf_id, newPaxCargaCorreo.opcc_id);
 
-    return NextResponse.json({
-      newPax,
-      newCarga,
-      newCorreo,
-      newPaxCargaCorreo,
-      updatedMovFlota,
-    }, { status: 201 });
+      return {
+        newPax,
+        newCarga,
+        newCorreo,
+        newPaxCargaCorreo,
+        updatedMovFlota,
+      };
+    });
+
+    return NextResponse.json(result, { status: 201 });
   } catch (error: any) {
     return NextResponse.json({ error: `Error al crear el cargo-mail: ${error.message}` }, { status: 500 });
   }
@@ -203,11 +207,10 @@ function validateRequestBody(bodyMapped: any) {
   bodyMapped.correo.estado = estadoEnum[bodyMapped.correo.estado];
   bodyMapped.correo.tipo = tipoEnum[bodyMapped.correo.tipo];
 
-  console.log("Valores transformados:", bodyMapped);
 }
 
 async function createPaxCargaCorreo(bodyMapped: any) {
-  return await prisma.oper_pax_carga_correo.create({
+  return prisma.oper_pax_carga_correo.create({
     data: {
       opmf_id: bodyMapped.opmf_id,
     },
@@ -215,54 +218,54 @@ async function createPaxCargaCorreo(bodyMapped: any) {
 }
 
 async function createPax(bodyMapped: any, opcc_id: number) {
-  return await prisma.oper_pax.create({
+  return prisma.oper_pax.create({
     data: {
-      estado: bodyMapped.pax.estado, // Usar directamente el valor transformado
-      tipo: bodyMapped.pax.tipo, // Usar directamente el valor transformado
+      estado: bodyMapped.pax.estado,
+      tipo: bodyMapped.pax.tipo,
       valor: bodyMapped.pax.valor,
-      opcc_id,
+      opcc_id: opcc_id,
     },
   });
 }
 
 async function createCarga(bodyMapped: any, opcc_id: number) {
-  return await prisma.oper_carga.create({
+  return prisma.oper_carga.create({
     data: {
-      estado: bodyMapped.carga.estado, // Usar directamente el valor transformado
-      tipo: bodyMapped.carga.tipo, // Usar directamente el valor transformado
+      estado: bodyMapped.carga.estado,
+      tipo: bodyMapped.carga.tipo,
       valor: bodyMapped.carga.valor,
-      opcc_id,
+      opcc_id: opcc_id,
     },
   });
 }
 
 async function createCorreo(bodyMapped: any, opcc_id: number) {
-  return await prisma.oper_correo.create({
+  return prisma.oper_correo.create({
     data: {
-      estado: bodyMapped.correo.estado, // Usar directamente el valor transformado
-      tipo: bodyMapped.correo.tipo, // Usar directamente el valor transformado
+      estado: bodyMapped.correo.estado,
+      tipo: bodyMapped.correo.tipo,
       valor: bodyMapped.correo.valor,
-      opcc_id,
+      opcc_id: opcc_id,
     },
   });
 }
 
 async function updatePaxCargaCorreo(opcc_id: number, oppa_id: number, opca_id: number, opco_id: number) {
-  return await prisma.oper_pax_carga_correo.update({
-    where: { opcc_id },
+  return prisma.oper_pax_carga_correo.update({
+    where: { opcc_id: opcc_id },
     data: {
-      oppa_id,
-      opca_id,
-      opco_id,
+      oppa_id: oppa_id,
+      opca_id: opca_id,
+      opco_id: opco_id,
     },
   });
 }
 
 async function updateMovFlota(opmf_id: number, opcc_id: number) {
-  return await prisma.oper_mov_flota.update({
-    where: { opmf_id },
+  return prisma.oper_mov_flota.update({
+    where: { opmf_id: opmf_id },
     data: {
-      opcc_id,
+      opcc_id: opcc_id,
     },
   });
 }
